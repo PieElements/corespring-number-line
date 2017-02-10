@@ -1,0 +1,57 @@
+{
+  "langs": [
+    "en-US"
+  ],
+  "elements": {
+    "corespring-number-line": "../.."
+  },
+  "models": [
+    {
+      "id": "1",
+      "element": "corespring-number-line",
+      "correctResponse": [
+        {
+          "type": "point",
+          "pointType": "full",
+          "domainPosition": 1
+        }
+      ],
+      "feedback": {
+        "correctFeedbackType": "none",
+        "partialFeedbackType": "none",
+        "incorrectFeedbackType": "none"
+      },
+      "allowPartialScoring": false,
+      "partialScoring": [
+        {}
+      ],
+      "model": {
+        "config": {
+          "domain": [
+            -5,
+            5
+          ],
+          "maxNumberOfPoints": 20,
+          "tickFrequency": 11,
+          "showMinorTicks": true,
+          "snapPerTick": 1,
+          "tickLabelOverrides": [],
+          "initialType": "PF",
+          "exhibitOnly": false,
+          "availableTypes": {
+            "PF": true,
+            "PE": true,
+            "LFF": true,
+            "LEF": true,
+            "LFE": true,
+            "LEE": true,
+            "RFN": true,
+            "RFP": true,
+            "REN": true,
+            "REP": true
+          }
+        }
+      }
+    }
+  ]
+}
