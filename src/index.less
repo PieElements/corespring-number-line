@@ -18,6 +18,15 @@
     background-position: (-@idx * @number-line-icon-width) (-@number-line-icon-height)
   }
 }
+.noselect() {
+  -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+     -khtml-user-select: none; /* Konqueror HTML */
+       -moz-user-select: none; /* Firefox */
+        -ms-user-select: none; /* Internet Explorer/Edge */
+            user-select: none; /* Non-prefixed version, currently
+                                  supported by Chrome and Opera */
+}
 
 .element-selector-template() {
   white-space: nowrap;
@@ -84,7 +93,26 @@
 }
 
 .view-number-line {
-
+  .point-groupings {
+    margin: 0;
+    padding: 0;
+    li{
+      .noselect();
+      margin: 4px;
+      display: inline-block;
+      padding: 10px;
+      cursor: pointer;
+      background-color: white;
+      transition: background-color 140ms linear;
+      border-radius: 4px;
+      .selected{
+        background-color: #e5e4cf;
+      }
+      &:hover{
+        background-color: #eeeeee;
+      }
+    }
+  }
   .undo-button-row {
     text-align: center;
   }
