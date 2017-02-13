@@ -33,6 +33,7 @@
   display: inline-block;
   vertical-align: middle;
   margin: 0 10px;
+  .noselect();
 
   span.element-pf a {
     .style-element(0);
@@ -105,7 +106,9 @@
       background-color: white;
       transition: background-color 140ms linear;
       border-radius: 4px;
-      .selected{
+      &.selected, 
+      &.selected:hover 
+      {
         background-color: #e5e4cf;
       }
       &:hover{

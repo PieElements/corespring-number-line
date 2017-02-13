@@ -10,6 +10,9 @@
   "license": "ISC",
   "dependencies": {
     "react": "^15.4.2",
-    "react-dom": "^15.4.2"
+    "react-dom": "^15.4.2",
+    "lodash": "^4.17.4",
+    "raphael": "~2.2.7",
+    "d3": "^4.5.0"
   }
 }
