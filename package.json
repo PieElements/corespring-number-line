@@ -12,7 +12,8 @@
     "react": "^15.4.2",
     "react-dom": "^15.4.2",
     "lodash": "^4.17.4",
-    "raphael": "~2.2.7",
-    "d3": "^4.5.0"
+    "d3-scale": "^1.0.4",
+    "d3-selection": "^1.0.3",
+    "react-draggable": "^2.2.3"
   }
 }
