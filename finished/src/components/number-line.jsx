@@ -1,5 +1,7 @@
 import React from 'react';
 import Draggable from 'react-draggable';
+import d3 from 'd3';
+import _ from 'lodash';
 
 const xScale = (props) => {
   console.log('[xScale] min: ', props.min, 'max: ', props.max, 'width: ', props.width);

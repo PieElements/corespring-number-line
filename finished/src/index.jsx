@@ -1,11 +1,6 @@
-import './main.css';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { Provider } from 'react-redux';
-import { makeStore } from './lib/store';
-import Chart from './components/chart.jsx';
 import NumberLine from './components/number-line.jsx';
-const store = makeStore();
 
 class App extends React.Component {
   constructor(props) {
