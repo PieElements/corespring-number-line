@@ -1,10 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import NumberLine from './number-line';
-import * as d3 from 'd3';
-
 require('./index.less');
-
 
 export default class CorespringNumberLine extends HTMLElement {
 
