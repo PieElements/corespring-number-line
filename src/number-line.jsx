@@ -1,6 +1,6 @@
 import React from 'react';
 import PointBar from './point-bar';
-import PointGroupings from './point-groupings';
+import PointChooser from './point-chooser';
 
 export default class NumberLine extends React.Component {
 
@@ -12,8 +12,7 @@ export default class NumberLine extends React.Component {
 
     return <div className="view-number-line">
       <div className="interactive-graph">
-        <PointGroupings show={true} />
-        <PointBar />
+        <PointChooser />
       </div>
     </div>
   }
