@@ -1,7 +1,7 @@
 import React from 'react';
 import PointChooser from './point-chooser';
 import Graph from './graph';
-import { convertFrequencyToInterval } from './graph/tick-utils';
+import { getInterval } from './graph/tick-utils';
 
 export default class NumberLine extends React.Component {
 
@@ -20,8 +20,10 @@ export default class NumberLine extends React.Component {
   }
 
   toggleDot(d) {
-    d.selected = !d.selected;
-    this.setState({ dots: this.state.dots });
+    if (d) {
+      d.selected = !d.selected;
+      this.setState({ dots: this.state.dots });
+    }
   }
 
   moveDot(d, position) {
@@ -40,16 +42,6 @@ export default class NumberLine extends React.Component {
 
   render() {
 
-    console.log(this.props);
-
-    let props = {
-      width: 600,
-      height: 400,
-      min: -10,
-      max: 10,
-      ticks: 10
-    }
-
     let dotsSelected = this.state.dots.some(d => d.selected);
     let config = this.props.model.config;
     let { domain: domainArray } = config;
@@ -58,7 +50,12 @@ export default class NumberLine extends React.Component {
       max: domainArray[1]
     }
 
-    let ticks = convertFrequencyToInterval(domain, config.tickFrequency, config.snapPerTick);
+    let ticks = {
+      major: config.tickFrequency || 2,
+      minor: config.snapPerTick || 0,
+    }
+
+    ticks.interval = getInterval(domain, ticks);
 
     let graphProps = {
       domain,

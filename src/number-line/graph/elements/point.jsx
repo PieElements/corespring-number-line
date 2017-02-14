@@ -8,45 +8,44 @@ export default class Point extends React.Component {
 
   render() {
 
-    let props = this.props;
+    let { onDragStart,
+      onDragStop,
+      onClick,
+      onMoveDot,
+      interval,
+      height,
+      ySlot,
+      selected,
+      position,
+      min,
+      max,
+      xScale } = this.props;
 
-    let scaledInterval = Math.abs(props.xScale(props.min) - props.xScale(props.min + props.interval))
-
-    let data = {
-      interval: props.interval,
-      position: props.position,
-      bounds: {
-        left: props.min - props.position,
-        right: props.max - props.position
-      }
+    let bounds = {
+      left: min - position,
+      right: max - position
     }
 
-    let minScaled = props.xScale(props.min);
-    let maxScaled = props.xScale(props.max);
-    let positionScaled = props.xScale(props.position);
-    let leftDistance = minScaled - positionScaled;
-    let rightDistance = maxScaled - positionScaled;
+    let minScaled = xScale(min);
+    let maxScaled = xScale(max);
+    let positionScaled = xScale(position);
 
-    let scaled = {
-      interval: scaledInterval,
-      position: props.xScale(data.position),
-      bounds: {
-        left: leftDistance,
-        right: rightDistance
-      }
+    let boundsScaled = {
+      left: minScaled - positionScaled,
+      right: maxScaled - positionScaled
     }
 
+    let intervalScaled = Math.abs(xScale(min + interval) - minScaled);
 
     let onStop = (e, dd) => {
-      props.onDragStop();
+      onDragStop();
 
       if (dd.deltaX === 0) {
-        props.onClick();
+        onClick();
       } else {
-        let xScale = props.xScale;
-        let newValue = props.xScale.invert(parseInt(dd.node.getAttribute('cx')) + dd.lastX);
+        let newValue = xScale.invert(parseInt(dd.node.getAttribute('cx')) + dd.lastX);
         let out = Number(newValue).toFixed(1);
-        props.onMoveDot(out);
+        onMoveDot(out);
       }
     }
 
@@ -55,20 +54,19 @@ export default class Point extends React.Component {
       e.nativeEvent.preventDefault();
     }
 
-    let grid = [scaled.interval];
-    let y = (props.height - 8) - (props.ySlot * 22);
+    let y = (height - 8) - (ySlot * 22);
 
     return <Draggable
       onMouseDown={onMouseDown}
-      onStart={props.onDragStart}
+      onStart={onDragStart}
       onStop={onStop}
       axis="x"
-      grid={grid}
-      bounds={scaled.bounds}>
+      grid={[intervalScaled]}
+      bounds={boundsScaled}>
       <circle
         r="7"
-        className={props.selected ? 'selected' : ''}
-        cx={scaled.position}
+        className={selected ? 'selected' : ''}
+        cx={positionScaled}
         cy={y} />
     </Draggable>;
   }

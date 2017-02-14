@@ -1,17 +1,17 @@
 import range from 'lodash/range';
 import uniq from 'lodash/uniq';
 
-export function convertFrequencyToInterval(domain, tickCount, minorTickCount) {
-
+export function getInterval(domain, ticks) {
   let { min, max } = domain;
+  let { major, minor } = ticks;
 
   if (min >= max) {
     throw new Error(`min is > max: ${min} > ${max}`);
   }
 
   let distance = max - min;
-  let minorTicks = minorTickCount > 0 ? (minorTickCount + 1) : 1;
-  let normalizedMajor = tickCount - 1;
+  let minorTicks = minor > 0 ? (minor + 1) : 1;
+  let normalizedMajor = major - 1;
 
   if (isNaN(normalizedMajor)) {
     throw new Error('Tick Frequency must be 2 or higher');
@@ -21,19 +21,10 @@ export function convertFrequencyToInterval(domain, tickCount, minorTickCount) {
     throw new Error('Tick Frequency must be 2 or higher');
   }
 
-  let major = parseFloat(Number(distance / normalizedMajor).toFixed(4));
+  // let majorInterval = parseFloat(Number(distance / normalizedMajor).toFixed(4));
   let divider = normalizedMajor * minorTicks;
   let raw = distance / divider;
-  let interval = parseFloat(Number(raw).toFixed(4));
-  return {
-    interval: interval,
-    steps: minorTickCount,
-    //return counts 
-    counts: {
-      interval: distance / interval,
-      major: distance / major
-    }
-  };
+  return parseFloat(Number(raw).toFixed(4));
 }
 
 export function buildTickModel(domain, ticks, scaleFn) {
@@ -49,7 +40,7 @@ export function buildTickModel(domain, ticks, scaleFn) {
 
   return rng.map((r, index) => {
 
-    let major = (index % (ticks.steps + 1)) === 0;
+    let major = (index % (ticks.minor + 1)) === 0;
     return {
       index: index,
       value: r,

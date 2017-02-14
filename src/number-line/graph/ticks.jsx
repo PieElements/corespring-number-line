@@ -1,6 +1,31 @@
 import React, { PropTypes as PT } from 'react';
 import { buildTickModel } from './tick-utils';
 
+export const TickValidator = PT.shape({
+  /** the number of major ticks (including min + max) 
+   * to display. cant be lower than 2.
+   */
+  major: (props, propName) => {
+    let major = props[propName];
+    if (major < 2) {
+      return new Error(`Invalid prop ${propName} < 2. ${componentName}`);
+    }
+  },
+  /** the number of minor ticks to display between major ticks.
+   * Can't be less than zero.
+   */
+  minor: (props, propName, componentName) => {
+    let minor = props[propName];
+    if (minor < 0) {
+      return new Error(`Invalid prop ${propName} must be > 0. ${componentName}`);
+    }
+    if (minor > 20) {
+      return new Error(`Invalid prop ${propName} must be less than or equal to 20. ${componentName}`);
+    }
+  },
+  interval: PT.number.isRequired
+}).isRequired;
+
 export class Tick extends React.Component {
 
   constructor(props) {
@@ -90,10 +115,7 @@ Ticks.propTypes = {
     min: PT.number.isRequired,
     max: PT.number.isRequired
   }).isRequired,
-  ticks: PT.shape({
-    interval: PT.number.isRequired,
-    steps: PT.number.isRequired
-  }),
+  ticks: TickValidator,
   y: PT.number.isRequired,
   xScale: PT.func.isRequired
 }
