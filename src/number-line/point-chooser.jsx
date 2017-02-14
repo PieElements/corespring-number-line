@@ -1,5 +1,20 @@
-import React from 'react';
+import React, { PropTypes as PT } from 'react';
 import concat from 'lodash/concat';
+
+
+//<path d="M0 0h24v24H0z" fill="none" />
+let DeleteIcon = (props) => {
+  return <svg
+    className="delete-icon"
+    fill="#000000"
+    height="24"
+    viewBox="0 0 24 24"
+    width="24"
+    xmlns="http://www.w3.org/2000/svg">
+    <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z" />
+    <path d="M0 0h24v24H0z" fill="none" />
+  </svg>
+};
 
 function PointFilter(props) {
 
@@ -67,6 +82,7 @@ export default class PointChooser extends React.Component {
       icons: this.allIcons,
       selectedPoint: this.point[0]
     }
+
   }
 
   setFilter(p) {
@@ -77,26 +93,46 @@ export default class PointChooser extends React.Component {
     this.setState({ activeFilter: null, icons: this.allIcons });
   }
 
-  selectPoint(p) {
-    this.setState({ selectedPoint: p });
+  selectType(p) {
+    this.props.onElementType(p);
   }
 
-  deselectPoint(p) {
-    this.setState({ selectedPoint: null });
+  deselectType(p) {
+    this.props.onElementType(null);
   }
 
   render() {
+
+    let maybeDeleteIcon = this.props.showDeleteButton ? <span
+      onClick={this.props.onDeleteClick} >
+      <DeleteIcon />
+    </span> : null;
+
     return <div className="point-chooser">
       <PointFilter
         activeFilter={this.state.activeFilter}
         setFilter={this.setFilter.bind(this)}
         rmFilter={this.rmFilter.bind(this)} />
       <Points
-        selected={this.state.selectedPoint}
-        selectPoint={this.selectPoint.bind(this)}
-        deselectPoint={this.deselectPoint.bind(this)}
+        selected={this.props.elementType}
+        selectPoint={this.selectType.bind(this)}
+        deselectPoint={this.deselectType.bind(this)}
         icons={this.state.icons} />
-      {this.state.selectedPoint}
+      {maybeDeleteIcon}
     </div>;
   }
+}
+
+PointChooser.DEFAULT_TYPE = 'pf';
+
+PointChooser.defaultProps = {
+  showDeleteButton: false,
+  elementType: PointChooser.DEFAULT_TYPE
+}
+
+PointChooser.propTypes = {
+  elementType: PT.string,
+  showDeleteButton: PT.bool,
+  onDeleteClick: PT.func.isRequired,
+  onElementType: PT.func.isRequired
 }

@@ -9,11 +9,20 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "react": "^15.4.2",
-    "react-dom": "^15.4.2",
-    "lodash": "^4.17.4",
     "d3-scale": "^1.0.4",
     "d3-selection": "^1.0.3",
+    "lodash": "^4.17.4",
+    "mocha": "^3.2.0",
+    "react": "^15.4.2",
+    "react-dom": "^15.4.2",
     "react-draggable": "^2.2.3"
+  },
+  "devDependencies": {
+    "babel-plugin-transform-es2015-modules-commonjs": "^6.23.0",
+    "babel-register": "^6.23.0",
+    "chai": "^3.5.0",
+    "chai-shallow-deep-equal": "^1.4.4",
+    "proxyquire": "^1.7.11",
+    "sinon": "^1.17.7"
   }
 }

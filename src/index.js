@@ -25,13 +25,12 @@ export default class CorespringNumberLine extends HTMLElement {
   }
 
   _render() {
-    console.log('_render..');
     try {
       if (this._model && this._session) {
-        let el = React.createElement(NumberLine, { model: this._model, session: this._session });
+        let props = { model: this._model, session: this._session };
+        let el = React.createElement(NumberLine, props)
         ReactDOM.render(el, this);
       }
-
     } catch (e) {
       console.log(e.stack);
       console.log('!!', e.message);

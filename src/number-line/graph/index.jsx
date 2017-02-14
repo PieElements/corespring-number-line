@@ -1,23 +1,25 @@
 import React, { PropTypes as PT } from 'react';
-import Draggable from 'react-draggable';
-import _ from 'lodash';
+import Draggable from '../../draggable';
+import times from 'lodash/times';
 import { scaleLinear } from 'd3-scale';
 import { select, mouse } from 'd3-selection';
-import Tick from './tick';
 import Point from './elements/point';
 import Line from './line';
 import Arrow from './arrow';
+import Ticks from './ticks';
 
-const xScale = (props) => {
-  console.log('[xScale] min: ', props.min, 'max: ', props.max, 'width: ', props.width);
-  return scaleLinear()
-    .domain([props.min, props.max])
-    .range([40, props.width - 40]);
-};
+const getXScale = (min, max, width) => {
 
-const marshalProps = (props) => {
-  const scales = { xScale: xScale(props) };
-  return Object.assign({}, props, scales);
+  if (min === undefined || max === undefined || width === undefined) {
+    throw new Error('missing min/max/width');
+  }
+
+  return (v) => {
+    let out = scaleLinear()
+      .domain([min, max])
+      .range([40, width - 40])(v);
+    return out;
+  }
 };
 
 let Debug = (props) => {
@@ -37,19 +39,24 @@ export default class NumberLineGraph extends React.Component {
 
   componentDidMount() {
     let svg = select(this.svg);
-    let xScale = marshalProps(this.props).xScale;
-    let addDot = this.addDot.bind(this);
-    let getState = () => this.state;
-    svg.on('click', function () {
-      let s = getState();
-      if (s && s.isDragging) {
-        console.log('is dragging - skip');
-      } else {
-        var coords = mouse(this);
-        let x = Math.round(xScale.invert(coords[0]))
-        addDot(x);
-      }
-    });
+    // let domain = this.props.
+    // let xScale = getXScale(this.props.domain.min, this.props.domain.max, this.props.width).xScale;
+    // let addDot = this.addDot.bind(this);
+    // let getState = () => this.state;
+    // /** 
+    //  * Note: we use d3 click + mouse to give us domain values directly.
+    //  * Saves us having to calculate them ourselves from a MouseEvent.
+    //  */
+    // svg.on('click', function () {
+    //   let s = getState();
+    //   if (s && s.isDragging) {
+    //     //console.log('is dragging - skip');
+    //   } else {
+    //     var coords = mouse(this);
+    //     let x = Math.round(xScale.invert(coords[0]))
+    //     addDot(x);
+    //   }
+    // });
   }
 
   addDot(x) {
@@ -75,27 +82,26 @@ export default class NumberLineGraph extends React.Component {
 
   render() {
 
-    let props = this.props;
-    const d3Props = marshalProps(props);
+    let { domain, width, ticks, height } = this.props;
+    // const d3Props = marshalProps(domain.min, domain.max, props.width);
+    const xScale = getXScale(domain.min, domain.max, width);
 
-    if (props.max <= props.min) {
-      return <div>{props.max} is less than or equal to {props.min}</div>
+    if (domain.max <= domain.min) {
+      return <div>{domain.max} is less than or equal to {domain.min}</div>
     } else {
-      const tickCount = props.ticks;
-      const distance = props.max - props.min;
+      const { interval } = ticks;
+      const distance = domain.max - domain.min;
 
-      const interval = distance / tickCount;
+      // const interval = distance / tickCount;
 
-      let lineY = props.height - 30;
+      let lineY = height - 30;
 
-      let ticks = _.times(tickCount + 1, (c) => {
-        return <Tick
-          key={c}
-          value={props.min + (c * interval)}
-          y={lineY}
-          xScale={d3Props.xScale}
-        />
-      });
+      /*let ticks = times(tickCount + 1, (c) => <Tick
+        key={c}
+        value={props.min + (c * interval)}
+        y={lineY}
+        xScale={d3Props.xScale}
+      />);*/
 
       let onDragStart = () => this.setState({ isDragging: true });
       let onDragStop = () => {
@@ -104,15 +110,12 @@ export default class NumberLineGraph extends React.Component {
         }, 100);
       }
 
-      let onDotClick = (d) => {
-        console.log('[NumberLine] onDotClick', d);
-        props.toggleDot(d);
-      }
+      let onDotClick = (d) => props.toggleDot(d);
 
       let stacks = [];
 
-      let dots = props.dots.map((d, index) => {
-        let position = Number(d.dotPosition).toFixed(2);
+      /*let dots = props.dots.map((d, index) => {
+        let position = Number(d.position);
 
         stacks[position] = stacks[position] || [];
         let stack = stacks[position];
@@ -126,29 +129,49 @@ export default class NumberLineGraph extends React.Component {
           height={props.height}
           interval={interval}
           ySlot={stack.length}
-          dotPosition={position}
+          position={position}
           selected={d.selected}
           xScale={d3Props.xScale}
           onDragStart={onDragStart}
           onDragStop={onDragStop}
           onClick={onDotClick.bind(null, d)}
           onMoveDot={props.onMoveDot.bind(null, d)} />
-      });
+      });*/
+      let dots = [];
 
       let debug = this.props.debug ? <Debug
         dots={this.props.dots || []}
         state={this.state} /> : <span></span>;
 
-
       return <div>
         <svg
           ref={svg => this.svg = svg}
-          width={props.width}
-          height={props.height}
+          width={width}
+          height={height}
         >
-          <style>
-            {
-              `circle{
+          <Line y={lineY} width={width} />
+          <Arrow
+            y={lineY} />
+          <Arrow
+            x={width}
+            y={lineY}
+            direction="right"
+          />
+          <Ticks
+            y={lineY}
+            domain={domain}
+            ticks={ticks}
+            xScale={xScale} />
+          {dots}
+        </svg>
+        {debug}
+      </div>;
+    }
+  }
+}
+/*
+
+              circle{
               cursor:pointer;
               opacity: 1;
               transition: r 200ms ease-in, opacity 200ms ease-in;
@@ -178,33 +201,20 @@ export default class NumberLineGraph extends React.Component {
               font-family: sans-serif;
               font-size: 12px;
             }
-          `
-            }
-          </style>
-          <Line y={lineY} width={props.width} />
-          <Arrow
-            y={lineY} />
-          <Arrow
-            x={props.width}
-            y={lineY}
-            direction="right"
-          />
-          {ticks}
-          {dots}
-          {debug}
-        </svg>
-      </div>;
-    }
-  }
-}
-
+            */
 NumberLineGraph.propTypes = {
-  min: PT.number.isRequired,
-  max: PT.number.isRequired,
+  domain: PT.shape({
+    min: PT.number.isRequired,
+    max: PT.number.isRequired
+  }).isRequired,
+  ticks: PT.shape({
+    interval: PT.number.isRequired,
+    steps: PT.number.isRequired
+  }),
   width: PT.number.isRequired,
   height: PT.number.isRequired,
-  ticks: PT.number.isRequired,
   toggleDot: PT.func.isRequired,
+  onMoveDot: PT.func.isRequired,
   debug: PT.bool
 }
 
