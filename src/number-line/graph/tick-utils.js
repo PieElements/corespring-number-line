@@ -38,10 +38,9 @@ export function convertFrequencyToInterval(domain, tickCount, minorTickCount) {
 
 export function buildTickModel(domain, ticks, scaleFn) {
 
-  console.log('>>> steps: ', ticks.steps);
   let mkRange = (min, max, interval) => {
     let raw = range(min * 1000, max * 1000, interval * 1000).map(v => v / 1000);
-
+    //Fix the last step due to rounding errors
     raw.splice(raw.length, 1, max)
     return raw;
   }

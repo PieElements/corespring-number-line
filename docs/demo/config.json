@@ -28,13 +28,13 @@
       "model": {
         "config": {
           "domain": [
-            -34,
-            28
+            -5,
+            5
           ],
           "maxNumberOfPoints": 20,
-          "tickFrequency": 3,
+          "tickFrequency": 11,
           "showMinorTicks": true,
-          "snapPerTick": 11,
+          "snapPerTick": 1,
           "tickLabelOverrides": [],
           "initialType": "PF",
           "exhibitOnly": false,
