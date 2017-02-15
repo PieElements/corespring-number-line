@@ -14,7 +14,7 @@
     "lodash": "^4.17.4",
     "react": "^15.4.2",
     "react-dom": "^15.4.2",
-    "react-draggable": "^2.2.3"
+    "react-draggable": "corespring/react-draggable#feature/fix-bound-drag"
   },
   "devDependencies": {
     "babel-loader": "^6.3.0",
