@@ -27,14 +27,40 @@ export function getInterval(domain, ticks) {
   return parseFloat(Number(raw).toFixed(4));
 }
 
+let mkRange = (min, max, interval) => {
+  let raw = range(min * 1000, max * 1000, interval * 1000).map(v => v / 1000);
+  //Fix the last step due to rounding errors
+  raw.splice(raw.length, 1, max)
+  return raw;
+}
+
+export function snapTo(min, max, interval, value) {
+
+  if (value >= max) {
+    return max;
+  }
+  if (value <= min) {
+    return min;
+  }
+
+
+  let rng = mkRange(min, max, interval);
+
+  rng = rng.filter(v => {
+    return Math.abs(value - v) <= interval;
+  });
+
+  let closest = rng.reduce((prev, curr) => {
+    let currentDistance = Math.abs(curr - value);
+    let previousDistance = Math.abs(prev - value);
+    return currentDistance <= previousDistance ? curr : prev;
+  });
+
+  return closest;
+}
+
 export function buildTickModel(domain, ticks, scaleFn) {
 
-  let mkRange = (min, max, interval) => {
-    let raw = range(min * 1000, max * 1000, interval * 1000).map(v => v / 1000);
-    //Fix the last step due to rounding errors
-    raw.splice(raw.length, 1, max)
-    return raw;
-  }
 
   let rng = mkRange(domain.min, domain.max, ticks.interval);
 

@@ -5,6 +5,8 @@ import Point from '../src/number-line/graph/elements/point';
 import Line from '../src/number-line/graph/elements/line';
 import { scaleLinear } from 'd3-scale';
 import range from 'lodash/range';
+import { snapTo, getInterval } from '../src/number-line/graph/tick-utils';
+
 
 class Demo extends React.Component {
 
@@ -18,23 +20,40 @@ class Demo extends React.Component {
     }
   }
 
-  render() {
+  getChildContext() {
+    let { min, max, width } = this.props;
+    return {
+      xScale: this.getXScale(),
+      snapValue: this.getSnapValue()
+    };
+  }
 
-    let { padding, width, height, min, max } = this.props;
-
-    let xScale = scaleLinear()
+  getXScale() {
+    let { min, max, width, padding } = this.props;
+    return scaleLinear()
       .domain([min, max])
       .range([padding, width - padding]);
+  }
+
+  getSnapValue() {
+    let { min, max, width, padding, interval } = this.props;
+    return snapTo.bind(null, min, max, interval);
+  }
+
+  render() {
+
+    let { interval, padding, width, height, min, max } = this.props;
+
+    let xScale = this.getXScale();
 
     let tester = scaleLinear()
       .domain([0, 10])
       .range([1, 5]);
 
-    let interval = 10;
 
     let gridLines = range(min, max + interval, interval).map(r => {
       let x = xScale(r);
-      return <line y1="0" y2={height} x1={x} x2={x} stroke="rgba(155,0,100,0.3)" />
+      return <line key={r} y1="0" y2={height} x1={x} x2={x} stroke="rgba(155,0,100,0.3)" />
     });
 
     let moveLine = (p) => {
@@ -49,7 +68,6 @@ class Demo extends React.Component {
         <Point
           empty={false}
           interval={interval}
-          xScale={xScale}
           y={20}
           position={30}
           bounds={{ left: -30, right: 70 }}
@@ -62,7 +80,6 @@ class Demo extends React.Component {
         <Point
           empty={true}
           interval={interval}
-          xScale={xScale}
           y={40}
           position={20}
           bounds={{ left: -20, right: 80 }}
@@ -76,7 +93,7 @@ class Demo extends React.Component {
           domain={{ min: min, max: max }}
           moveLine={moveLine}
           position={this.state.linePosition}
-          interval={10}
+          interval={interval}
           y={60}
           fill={{ left: true, right: false }}
           xScale={xScale} />
@@ -84,9 +101,21 @@ class Demo extends React.Component {
     </div>;
   }
 }
+Demo.childContextTypes = {
+  xScale: React.PropTypes.func.isRequired,
+  snapValue: React.PropTypes.func.isRequired
+}
 
 document.addEventListener('DOMContentLoaded', () => {
   let el = document.querySelector('.one');
-  let r = React.createElement(Demo, { min: 0, max: 100, width: 700, height: 500, padding: 200 });
+  let r = React.createElement(Demo,
+    {
+      min: 0,
+      max: 100,
+      interval: 5,
+      width: 587,
+      height: 500,
+      padding: 20
+    });
   ReactDOM.render(r, el);
 });

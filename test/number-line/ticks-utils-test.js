@@ -27,11 +27,42 @@ describe('ticks', () => {
       return v;
     });
 
-    it.only('??', () => {
+    it('??', () => {
       let result = mod.buildTickModel({ min: 0, max: 4 }, { interval: 0.66, steps: 2 }, scaleFn)
       expect(result).to.eql([]);
     });
   });
+
+  describe.only('snapTo', () => {
+    let assertSnapTo = (min, max, interval, value, expected) => {
+      it(`snaps ${value} to ${expected} with domain ${min}<->${max} with interval: ${interval} `, () => {
+        let result = mod.snapTo(min, max, interval, value);
+        expect(result).to.eql(expected);
+      });
+    }
+    describe('with 0, 10, 0.25', () => {
+      let a = assertSnapTo.bind(null, 0, 10, 0.25);
+      a(1, 1);
+      a(1.2, 1.25);
+      a(0.2, 0.25);
+      a(5.2, 5.25);
+      a(5.125, 5.25);
+      a(5.124, 5);
+    });
+
+    describe('with 0, 10, 1', () => {
+      let a = assertSnapTo.bind(null, 0, 10, 1);
+      a(0, 0);
+      a(10, 10);
+      a(100, 10);
+      a(1, 1);
+      a(1.2, 1);
+      a(0.2, 0);
+      a(5.2, 5);
+      a(5.001, 5);
+    });
+  });
+
   describe('convertFrequencyToInterval', () => {
 
     describe('with bad params', () => {

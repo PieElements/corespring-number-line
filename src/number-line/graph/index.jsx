@@ -7,6 +7,7 @@ import Point from './elements/point';
 import Line from './line';
 import Arrow from './arrow';
 import Ticks, { TickValidator } from './ticks';
+import { snapTo } from './tick-utils';
 
 const getXScale = (min, max, width) => {
 
@@ -18,6 +19,10 @@ const getXScale = (min, max, width) => {
     .domain([min, max])
     .range([40, width - 40]);
 };
+
+const getSnapValue = (min, max, interval) => {
+  return (v) => snapTo(min, max, interval, value);
+}
 
 let Debug = (props) => {
   return <div>
@@ -34,10 +39,18 @@ export default class NumberLineGraph extends React.Component {
     super(props);
   }
 
+  getChildContext() {
+    let { domain, width, ticks } = this.props;
+    return {
+      xScale: getXScale(domain.min, domain.max, width),
+      snapValue: getSnapValue(domain.min, domain.max, ticks.interval)
+    };
+  }
+
   componentDidMount() {
     let svg = select(this.svg);
     let addDot = this.addDot.bind(this);
-    let xScale = this.xScale;
+    // let xScale = this.xScale;
     let getState = () => this.state;
     /** 
      * Note: we use d3 click + mouse to give us domain values directly.
@@ -75,7 +88,7 @@ export default class NumberLineGraph extends React.Component {
   render() {
 
     let { domain, width, ticks, height, toggleDot } = this.props;
-    const xScale = this.xScale = getXScale(domain.min, domain.max, width);
+    const xScale = getXScale(domain.min, domain.max, width);
 
     if (domain.max <= domain.min) {
       return <div>{domain.max} is less than or equal to {domain.min}</div>
@@ -146,6 +159,11 @@ export default class NumberLineGraph extends React.Component {
     }
   }
 }
+
+NumberLineGraph.childContextTypes = {
+  xScale: PT.func.isRequired,
+  snapValue: PT.func.isRequired
+};
 /*
 
               circle{

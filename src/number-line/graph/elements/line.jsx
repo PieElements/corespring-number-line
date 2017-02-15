@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { PropTypes as PT } from 'react';
 import Point from './point';
 import isNumber from 'lodash/isNumber';
 
@@ -13,7 +13,6 @@ export default class Line extends React.Component {
     }
   }
 
-
   componentWillReceiveProps(nextProps) {
     console.log('nextProps', nextProps);
     if (nextProps) {
@@ -22,14 +21,14 @@ export default class Line extends React.Component {
     }
   }
 
-  onRightDrag(p) {
-    console.log('onRightDrag', p);
-    this.setState({ right: p });
-  }
-
-  onLeftDrag(p) {
+  onDotDrag(side, p) {
+    let { domain } = this.props;
     console.log('onLeftDrag', p);
-    this.setState({ left: p });
+    if (p >= domain.min && p <= domain.max) {
+      let newState = {}
+      newState[side] = p;
+      this.setState(newState);
+    }
   }
 
   onMoveLeftDot(d) {
@@ -37,9 +36,11 @@ export default class Line extends React.Component {
     this.props.moveLine({ left: d, right: position.right });
   }
 
-  onMoveRightDot(d) {
-    let { position } = this.props;
-    this.props.moveLine({ left: position.left, right: d });
+  onMoveDot(side, d) {
+    let { position: p } = this.props;
+    let newPosition = { left: p.left, right: p.right };
+    newPosition[side] = d;
+    this.props.moveLine(newPosition);
   }
 
   render() {
@@ -48,11 +49,17 @@ export default class Line extends React.Component {
       fill,
       position,
       domain,
-      xScale,
       y
     } = this.props;
 
-    let { onLeftDrag, onRightDrag, onMoveLeftDot, onMoveRightDot } = this;
+    let { xScale } = this.context;
+
+    let { onDotDrag, onMoveDot } = this;
+    let onMoveLeftDot = onMoveDot.bind(this, 'left');
+    let onMoveRightDot = onMoveDot.bind(this, 'right');
+    let onLeftDrag = onDotDrag.bind(this, 'left');
+    let onRightDrag = onDotDrag.bind(this, 'right');
+
     console.log('position:', position, this.state);
     let left = isNumber(this.state.left) ? this.state.left : position.left;
     let right = isNumber(this.state.right) ? this.state.right : position.right;
@@ -71,7 +78,6 @@ export default class Line extends React.Component {
         position={position.left}
         onDrag={onLeftDrag.bind(this)}
         onMoveDot={onMoveLeftDot.bind(this)}
-        xScale={xScale}
       />
       <Point
         empty={!fill.right}
@@ -80,8 +86,13 @@ export default class Line extends React.Component {
         position={position.right}
         onDrag={onRightDrag.bind(this)}
         onMoveDot={onMoveRightDot.bind(this)}
-        xScale={xScale}
       />
     </g>
   }
+}
+
+
+Line.contextTypes = {
+  xScale: PT.func.isRequired,
+  snapValue: PT.func.isRequired
 }

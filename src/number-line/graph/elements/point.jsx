@@ -14,15 +14,20 @@ export default class Point extends React.Component {
       bounds,
       selected,
       position,
-      xScale,
       empty } = this.props;
 
+    let { snapValue, xScale } = this.context;
+
     let getDragPosition = (dd, key) => {
-      console.log('[getDragPosition]', dd);
       let x = dd[key];
       let cx = parseInt(dd.node.getAttribute('cx'));
-      let newValue = xScale.invert(cx + x);
-      return parseFloat(Number(newValue).toFixed(4));
+      let final = cx + x;
+
+      let inverted = xScale.invert(final);
+      let out = parseFloat(Number(inverted).toFixed(4));
+      out = snapValue(out);
+      // log('[getDragPosition]', 'out: ', out, 'inverted: ', inverted, 'final: ', final, 'x: ', x, 'cx: ', cx, 'dd: ', dd);
+      return out;
     }
 
     let onStop = (e, dd) => {
@@ -36,22 +41,18 @@ export default class Point extends React.Component {
         }
       } else {
         let p = getDragPosition(dd, 'lastX');
-        console.log('[onStop] position: ', p);
         onMoveDot(p);
       }
     }
 
-    let onMouseDown = (e) => {
-      //prevent the text select icon from rendering.
-      e.nativeEvent.preventDefault();
-    }
+    //prevent the text select icon from rendering.
+    let onMouseDown = (e) => e.nativeEvent.preventDefault();
 
     let is = xScale(interval) - xScale(0);
     let scaledBounds = { left: (bounds.left / interval) * is, right: (bounds.right / interval) * is };
 
     let onDrag = (e, dd) => {
       let p = getDragPosition(dd, 'x');
-      console.log('[onDrag] position: ', p);
       if (this.props.onDrag) {
         this.props.onDrag(p);
       }
@@ -89,4 +90,9 @@ Point.propTypes = {
   onClick: PT.func.isRequired,
   onMoveDot: PT.func.isRequired,
   xScale: PT.func.isRequired
+}
+
+Point.contextTypes = {
+  xScale: PT.func.isRequired,
+  snapValue: PT.func.isRequired
 }
