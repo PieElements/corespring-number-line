@@ -17,18 +17,27 @@ export default class Point extends React.Component {
       xScale,
       empty } = this.props;
 
-    let getDragPosition = (dd) => {
-      let newValue = xScale.invert(parseInt(dd.node.getAttribute('cx')) + dd.lastX);
-      return Number(newValue).toFixed(1);
+    let getDragPosition = (dd, key) => {
+      console.log('[getDragPosition]', dd);
+      let x = dd[key];
+      let cx = parseInt(dd.node.getAttribute('cx'));
+      let newValue = xScale.invert(cx + x);
+      return parseFloat(Number(newValue).toFixed(4));
     }
 
     let onStop = (e, dd) => {
-      onDragStop();
+      if (onDragStop) {
+        onDragStop();
+      }
 
       if (dd.deltaX === 0) {
-        onClick();
+        if (onClick) {
+          onClick();
+        }
       } else {
-        onMoveDot(getDragPosition(dd));
+        let p = getDragPosition(dd, 'lastX');
+        console.log('[onStop] position: ', p);
+        onMoveDot(p);
       }
     }
 
@@ -38,11 +47,13 @@ export default class Point extends React.Component {
     }
 
     let is = xScale(interval) - xScale(0);
+    let scaledBounds = { left: (bounds.left / interval) * is, right: (bounds.right / interval) * is };
 
     let onDrag = (e, dd) => {
-      console.log('onDrag', e, dd)
+      let p = getDragPosition(dd, 'x');
+      console.log('[onDrag] position: ', p);
       if (this.props.onDrag) {
-        this.props.onDrag(getDragPosition(dd), e, dd);
+        this.props.onDrag(p);
       }
     }
 
@@ -53,7 +64,7 @@ export default class Point extends React.Component {
       onStop={onStop}
       axis="x"
       grid={[is]}
-      bounds={{ left: xScale(bounds.left), right: xScale(bounds.right) }}>
+      bounds={scaledBounds}>
       <circle
         r="5"
         fill={empty ? 'white' : 'black'}
