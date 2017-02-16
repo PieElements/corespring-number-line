@@ -3,19 +3,23 @@ import ReactDOM from 'react-dom';
 
 import Point from '../src/number-line/graph/elements/point';
 import Line from '../src/number-line/graph/elements/line';
+import Ray from '../src/number-line/graph/elements/ray';
+
 import { scaleLinear } from 'd3-scale';
 import range from 'lodash/range';
 import { snapTo, getInterval } from '../src/number-line/graph/tick-utils';
-
 
 class Demo extends React.Component {
 
   constructor(props) {
     super(props);
     this.state = {
-      linePosition: {
-        left: 10,
-        right: 30
+      lineSelected: false,
+      line: {
+        position: {
+          left: 10,
+          right: 100
+        }
       }
     }
   }
@@ -30,10 +34,16 @@ class Demo extends React.Component {
 
   getXScale() {
     let { min, max, width, padding } = this.props;
+    let range = [
+      padding,
+      width - padding];
+
+    // console.log('getXScale', min, max, width, padding, range);
     return scaleLinear()
       .domain([min, max])
-      .range([padding, width - padding]);
+      .range(range);
   }
+
 
   getSnapValue() {
     let { min, max, width, padding, interval } = this.props;
@@ -42,14 +52,16 @@ class Demo extends React.Component {
 
   render() {
 
+    let onLineClick = () => {
+      console.log(this.state);
+      this.setState({
+        lineSelected: !this.state.lineSelected,
+      });
+    }
+
     let { interval, padding, width, height, min, max } = this.props;
 
     let xScale = this.getXScale();
-
-    let tester = scaleLinear()
-      .domain([0, 10])
-      .range([1, 5]);
-
 
     let gridLines = range(min, max + interval, interval).map(r => {
       let x = xScale(r);
@@ -57,15 +69,68 @@ class Demo extends React.Component {
     });
 
     let moveLine = (p) => {
-      this.setState({ linePosition: p });
+      this.setState({ line: { position: p } });
     }
+
+    let els = this.props.elements.map((el, index) => {
+
+      let y = (index + 1) * 20;
+      if (el.type === 'line') {
+        let position = { left: el.domainPosition, right: el.domainPosition + el.size }
+        let fill = { left: el.leftPoint === 'full', right: el.rightPoint === 'full' };
+        return <Line
+          domain={{ min: min, max: max }}
+          moveLine={moveLine}
+          position={position}
+          selected={el.selected}
+          onClick={() => { }}
+          interval={interval}
+          y={y}
+          fill={fill}
+          xScale={xScale} />
+      } else if (el.type === 'point') {
+
+        let bounds = { left: min - el.domainPosition, right: max - el.domainPosition };
+
+        return <Point
+          empty={el.pointType === 'empty'}
+          interval={interval}
+          y={y}
+          position={el.domainPosition}
+          bounds={bounds}
+          onDragStop={() => { }}
+          onDragStart={() => { }}
+          onClick={() => { }}
+          onMoveDot={() => { }}
+          selected={el.selected}
+        />
+      } else if (el.type === 'ray') {
+        // let position = { left: el.domainPosition, right: el.domainPosition + el.size }
+        let fill = { left: el.leftPoint === 'full', right: el.rightPoint === 'full' };
+        return <Ray
+          domain={{ min: min, max: max }}
+          direction={el.direction}
+          moveLine={moveLine}
+          position={el.domainPosition}
+          selected={el.selected}
+          onClick={() => { }}
+          interval={interval}
+          y={y}
+          empty={el.pointType === 'empty'}
+          xScale={xScale} />
+      }
+
+
+    });
 
     return <div>
       <h1>Demo</h1>
       <div>{JSON.stringify(this.state, null, ' ')}</div>
       <svg width={width} height={height}>
+        <rect fill="none" stroke="#3099ec" width={width} height={height}></rect>
         {gridLines}
-        <Point
+        {els}
+        {/*<Point
           empty={false}
           interval={interval}
           y={20}
@@ -92,11 +157,13 @@ class Demo extends React.Component {
         <Line
           domain={{ min: min, max: max }}
           moveLine={moveLine}
-          position={this.state.linePosition}
+          position={this.state.line.position}
+          selected={this.state.lineSelected}
+          onClick={onLineClick}
           interval={interval}
           y={60}
           fill={{ left: true, right: false }}
-          xScale={xScale} />
+          xScale={xScale} />*/}
       </svg>
     </div>;
   }
@@ -112,10 +179,22 @@ document.addEventListener('DOMContentLoaded', () => {
     {
       min: 0,
       max: 100,
-      interval: 5,
-      width: 587,
+      interval: 10,
+      width: 1000,
       height: 500,
-      padding: 20
+      padding: 30,
+      onElementsChange: (elements) => {
+        console.log('new elements: ', elements);
+      },
+      elements: [
+        { type: 'line', size: 10, domainPosition: 10, rangePosition: 0, leftPoint: 'empty', rightPoint: 'full' },
+        { type: 'line', size: 20, domainPosition: 20, rangePosition: 0, leftPoint: 'full', rightPoint: 'empty' },
+        { type: 'point', pointType: 'full', domainPosition: 30, rangePosition: 0 },
+        { type: 'point', pointType: 'empty', domainPosition: 50, rangePosition: 0 },
+        { type: "ray", domainPosition: 60, rangePosition: 0, pointType: "full", direction: "negative" },
+        { type: "ray", domainPosition: 50, rangePosition: 0, pointType: "empty", direction: "positive" }
+
+      ]
     });
   ReactDOM.render(r, el);
 });

@@ -3,10 +3,11 @@ import Point from './point';
 import isNumber from 'lodash/isNumber';
 import Draggable, { getDragPosition } from '../../../draggable';
 import isEqual from 'lodash/isEqual';
+import Arrow from '../arrow';
 
-require('./line.less');
+require('./ray.less');
 
-export default class Line extends React.Component {
+export default class Ray extends React.Component {
 
   constructor(props) {
     super(props);
@@ -52,8 +53,10 @@ export default class Line extends React.Component {
   render() {
     let {
       interval,
+      empty,
       fill,
       position,
+      direction,
       domain,
       y,
       selected
@@ -67,34 +70,34 @@ export default class Line extends React.Component {
     let onLeftDrag = onDotDrag.bind(this, 'left');
     let onRightDrag = onDotDrag.bind(this, 'right');
 
-    let left = isNumber(this.state.left) ? this.state.left : position.left;
-    let right = isNumber(this.state.right) ? this.state.right : position.right;
-    
+    // let left = isNumber(this.state.left) ? this.state.left : position.left;
+    // let right = isNumber(this.state.right) ? this.state.right : position.right;
+
     let is = xScale(interval) - xScale(0);
 
     let onMouseDown = (e) => e.nativeEvent.preventDefault();
-    let onLineDragStart = (e) => this.setState({startX: e.clientX});
-    
-    
+    let onLineDragStart = (e) => this.setState({ startX: e.clientX });
+
+
     let onLineClick = (e) => {
-      let {startX, endX} = this.state;
-      if(!startX || !endX) {
+      let { startX, endX } = this.state;
+      if (!startX || !endX) {
         return;
       }
 
       let deltaX = Math.abs(endX - startX);
-      if(deltaX < (is / 10)){
+      if (deltaX < (is / 10)) {
         this.props.onClick();
-        this.setState({startX: null, endX: null});
+        this.setState({ startX: null, endX: null });
       }
     }
 
     let onLineDragStop = (e, dd) => {
-      this.setState({endX: e.clientX });
+      this.setState({ endX: e.clientX });
       let invertedX = xScale.invert(dd.lastX + xScale(0));
       let newPosition = { left: position.left + invertedX, right: position.right + invertedX };
-      
-      if(!isEqual(newPosition, this.props.position)){
+
+      if (!isEqual(newPosition, this.props.position)) {
         this.props.moveLine(newPosition);
       }
     }
@@ -104,49 +107,37 @@ export default class Line extends React.Component {
       right: ((domain.max - position.right) / interval) * is
     }
 
-    let lineClass ='line' + (selected ? ' selected' : '');
+    let className = 'ray' + (selected ? ' selected' : '');
 
-    return <Draggable
-      axis="x"
-      handle=".line-handle"
-      grid={[is]}
-      bounds={scaledLineBounds}
-      onStart={onLineDragStart}
-      onStop={onLineDragStop}
-      onMouseDown={onMouseDown} >
-      <g className={lineClass} >
-        <g transform={`translate(0, ${y})`}>
-          <line
-            onClick={onLineClick}
-            className="line-handle"
-            x1={xScale(left)} x2={xScale(right)}
-          ></line>
-          <Point
-            selected={selected}
-            empty={!fill.left}
-            interval={interval}
-            bounds={{ left: domain.min - position.left, right: domain.max - position.left }}
-            position={position.left}
-            onDrag={onLeftDrag.bind(this)}
-            onMoveDot={onMoveLeftDot.bind(this)}
-          />
-          <Point
-            selected={selected}
-            empty={!fill.right}
-            interval={interval}
-            bounds={{ left: domain.min - position.right, right: domain.max - position.right }}
-            position={position.right}
-            onDrag={onRightDrag.bind(this)}
-            onMoveDot={onMoveRightDot.bind(this)}
-          />
-        </g>
-      </g>
-    </Draggable >
+    let left = direction === 'positive' ? position : domain.min;
+    let right = direction === 'positive' ? domain.max : position;
+    let triangleX = direction === 'positive' ? xScale(right) : xScale(left);
+
+    return <g className={className} transform={`translate(0, ${y})`}>
+      <line
+        onClick={() => { }}
+        className="line-handle"
+        x1={xScale(left)} x2={xScale(right)}
+      ></line>
+      <Point
+        selected={selected}
+        empty={empty}
+        interval={interval}
+        bounds={{ left: domain.min - position, right: domain.max - position }}
+        position={position}
+        onDrag={onLeftDrag.bind(this)}
+        onMoveDot={onMoveLeftDot.bind(this)}
+      />
+      <Arrow
+        x={triangleX}
+        y={0}
+        direction={direction === 'positive' ? 'right' : 'left'} />
+    </g>;
   }
 }
 
 
-Line.contextTypes = {
+Ray.contextTypes = {
   xScale: PT.func.isRequired,
   snapValue: PT.func.isRequired
 }

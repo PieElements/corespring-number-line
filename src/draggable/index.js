@@ -8,3 +8,11 @@ export default class LocalDraggable extends Draggable {
     this.setState({ x: 0, y: 0 });
   }
 }
+
+export function getDragPosition(xScale, snapValue, dragX, nodeX) {
+  let final = dragX + nodeX;
+  let inverted = xScale.invert(final);
+  let out = parseFloat(Number(inverted).toFixed(4));
+  out = snapValue(out);
+  return out;
+}

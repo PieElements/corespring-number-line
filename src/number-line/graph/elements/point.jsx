@@ -1,5 +1,7 @@
 import React, { PropTypes as PT } from 'react';
-import Draggable from '../../../draggable';
+import Draggable, { getDragPosition } from '../../../draggable';
+
+require('./point.less');
 
 export default class Point extends React.Component {
 
@@ -18,16 +20,10 @@ export default class Point extends React.Component {
 
     let { snapValue, xScale } = this.context;
 
-    let getDragPosition = (dd, key) => {
-      let x = dd[key];
-      let cx = parseInt(dd.node.getAttribute('cx'));
-      let final = cx + x;
-
-      let inverted = xScale.invert(final);
-      let out = parseFloat(Number(inverted).toFixed(4));
-      out = snapValue(out);
-      // log('[getDragPosition]', 'out: ', out, 'inverted: ', inverted, 'final: ', final, 'x: ', x, 'cx: ', cx, 'dd: ', dd);
-      return out;
+    let dragPosition = (x) => {
+      let normalized = x + xScale(0);
+      let inverted = xScale.invert(normalized);
+      return snapValue(position + inverted);
     }
 
     let onStop = (e, dd) => {
@@ -40,8 +36,8 @@ export default class Point extends React.Component {
           onClick();
         }
       } else {
-        let p = getDragPosition(dd, 'lastX');
-        onMoveDot(p);
+        let newPosition = dragPosition(dd.lastX);
+        onMoveDot(newPosition);
       }
     }
 
@@ -52,12 +48,14 @@ export default class Point extends React.Component {
     let scaledBounds = { left: (bounds.left / interval) * is, right: (bounds.right / interval) * is };
 
     let onDrag = (e, dd) => {
-      let p = getDragPosition(dd, 'x');
+      let p = dragPosition(dd.x);
       if (this.props.onDrag) {
         this.props.onDrag(p);
       }
     }
-
+    
+    let className = 'point' + (selected ? ' selected' : '');
+    
     return <Draggable
       onMouseDown={onMouseDown}
       onStart={onDragStart}
@@ -70,8 +68,8 @@ export default class Point extends React.Component {
         r="5"
         fill={empty ? 'white' : 'black'}
         stroke="black"
-        strokeWidth="4"
-        className={selected ? 'selected' : ''}
+        strokeWidth="3"
+        className={className}
         cx={xScale(position)}
         cy={y} />
     </Draggable>;

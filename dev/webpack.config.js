@@ -7,6 +7,15 @@ module.exports = {
   },
   module: {
     rules: [
+
+      {
+        test: /\.less$/,
+        use: [
+          'style-loader',
+          'css-loader',
+          'less-loader'
+        ]
+      },
       {
         test: /\.jsx$/, use: [{
           loader: 'babel-loader',

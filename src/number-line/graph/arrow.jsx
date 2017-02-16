@@ -11,7 +11,7 @@ export default function Arrow(props) {
   }
 
   return <path
-    d="m 0,0 8.00000003,-5 0,10 -8.00000003,-5"
+    d="m 0,0 8,-5 0,10 -8,-5"
     transform={transform}
     style={{ fill: '#000000', stroke: '#000000' }} />
 }

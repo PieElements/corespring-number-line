@@ -1,0 +1,24 @@
+.line {
+  &.selected{
+    .line-handle{
+      stroke:#aaaaff;
+    }
+    circle{
+      stroke:#aaaaff;
+    }
+  }
+
+  .line-handle{
+    stroke: black;
+    cursor: pointer;
+    stroke-width: 5px;
+    transition: opacity 150ms linear, stroke-width 400ms linear;
+  }  
+  
+  &.react-draggable-dragging {
+    .line-handle{
+      opacity: 0.25;
+      stroke-width: 10px;
+    }
+  }
+}
