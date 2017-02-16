@@ -28,7 +28,7 @@ export function getInterval(domain, ticks) {
 }
 
 let mkRange = (min, max, interval) => {
-  let raw = range(min * 1000, max * 1000, interval * 1000).map(v => v / 1000);
+  let raw = range(min, max, interval);
   //Fix the last step due to rounding errors
   raw.splice(raw.length, 1, max)
   return raw;
@@ -59,10 +59,10 @@ export function snapTo(min, max, interval, value) {
   return closest;
 }
 
-export function buildTickModel(domain, ticks, scaleFn) {
+export function buildTickModel(domain, ticks, interval, scaleFn) {
 
 
-  let rng = mkRange(domain.min, domain.max, ticks.interval);
+  let rng = mkRange(domain.min, domain.max, interval);
 
   return rng.map((r, index) => {
 

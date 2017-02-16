@@ -22,8 +22,7 @@ export const TickValidator = PT.shape({
     if (minor > 20) {
       return new Error(`Invalid prop ${propName} must be less than or equal to 20. ${componentName}`);
     }
-  },
-  interval: PT.number.isRequired
+  }
 }).isRequired;
 
 export class Tick extends React.Component {
@@ -92,10 +91,8 @@ export default class Ticks extends React.Component {
   }
 
   render() {
-    let { domain, ticks, xScale, y } = this.props;
-
-    let tickModel = buildTickModel(domain, ticks, xScale);
-
+    let { domain, ticks, interval, xScale, y } = this.props;
+    let tickModel = buildTickModel(domain, ticks, interval, xScale);
     let nodes = tickModel.map(({ major, value, x }) => {
       return <Tick
         major={major}
@@ -116,6 +113,7 @@ Ticks.propTypes = {
     max: PT.number.isRequired
   }).isRequired,
   ticks: TickValidator,
+  interval: PT.number.isRequired,
   y: PT.number.isRequired,
   xScale: PT.func.isRequired
 }

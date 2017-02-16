@@ -10,7 +10,7 @@ export default class Point extends React.Component {
     let { onDragStart,
       onDragStop,
       onClick,
-      onMoveDot,
+      onMove,
       interval,
       y,
       bounds,
@@ -37,7 +37,7 @@ export default class Point extends React.Component {
         }
       } else {
         let newPosition = dragPosition(dd.lastX);
-        onMoveDot(newPosition);
+        onMove(newPosition);
       }
     }
 
@@ -53,9 +53,9 @@ export default class Point extends React.Component {
         this.props.onDrag(p);
       }
     }
-    
+
     let className = 'point' + (selected ? ' selected' : '');
-    
+
     return <Draggable
       onMouseDown={onMouseDown}
       onStart={onDragStart}
@@ -77,7 +77,9 @@ export default class Point extends React.Component {
 }
 
 Point.defaultProps = {
-  y: 0
+  y: 0,
+  selected: false,
+  empty: false
 }
 
 Point.propTypes = {
@@ -85,9 +87,15 @@ Point.propTypes = {
   position: PT.number.isRequired,
   onDragStop: PT.func.isRequired,
   onDragStart: PT.func.isRequired,
+  bounds: PT.shape({
+    left: PT.number.isRequired,
+    right: PT.number.isRequired
+  }),
+  selected: PT.bool,
+  empty: PT.bool,
+  y: PT.number,
   onClick: PT.func.isRequired,
-  onMoveDot: PT.func.isRequired,
-  xScale: PT.func.isRequired
+  onMove: PT.func.isRequired
 }
 
 Point.contextTypes = {

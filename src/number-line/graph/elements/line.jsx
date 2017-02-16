@@ -3,6 +3,8 @@ import Point from './point';
 import isNumber from 'lodash/isNumber';
 import Draggable, { getDragPosition } from '../../../draggable';
 import isEqual from 'lodash/isEqual';
+import extend from 'lodash/extend';
+import { basePropTypes } from './base';
 
 require('./line.less');
 
@@ -23,7 +25,7 @@ export default class Line extends React.Component {
     }
   }
 
-  onDotDrag(side, p) {
+  onDrag(side, p) {
     let { domain } = this.props;
     if (p >= domain.min && p <= domain.max) {
       let newState = {}
@@ -32,27 +34,17 @@ export default class Line extends React.Component {
     }
   }
 
-  onMoveLeftDot(d) {
-    let { position } = this.props;
-    this.props.moveLine({ left: d, right: position.right });
-  }
-
-  onMoveDot(side, d) {
+  onMove(side, d) {
     let { position: p } = this.props;
     let newPosition = { left: p.left, right: p.right };
     newPosition[side] = d;
-    this.props.moveLine(newPosition);
-  }
-
-  dragPosition(dragX, nodeX) {
-    let { xScale, snapValue } = this.context;
-    return getDragPosition(xScale, snapValue, dragX, nodeX);
+    this.props.onMoveLine(newPosition);
   }
 
   render() {
     let {
       interval,
-      fill,
+      empty,
       position,
       domain,
       y,
@@ -61,41 +53,40 @@ export default class Line extends React.Component {
 
     let { xScale } = this.context;
 
-    let { onDotDrag, onMoveDot } = this;
-    let onMoveLeftDot = onMoveDot.bind(this, 'left');
-    let onMoveRightDot = onMoveDot.bind(this, 'right');
-    let onLeftDrag = onDotDrag.bind(this, 'left');
-    let onRightDrag = onDotDrag.bind(this, 'right');
+    let { onDrag, onMove } = this;
+    let onMoveLeft = onMove.bind(this, 'left');
+    let onMoveRight = onMove.bind(this, 'right');
+    let onDragLeft = onDrag.bind(this, 'left');
+    let onDragRight = onDrag.bind(this, 'right');
 
     let left = isNumber(this.state.left) ? this.state.left : position.left;
     let right = isNumber(this.state.right) ? this.state.right : position.right;
-    
+
     let is = xScale(interval) - xScale(0);
 
     let onMouseDown = (e) => e.nativeEvent.preventDefault();
-    let onLineDragStart = (e) => this.setState({startX: e.clientX});
-    
-    
+    let onLineDragStart = (e) => this.setState({ startX: e.clientX });
+
     let onLineClick = (e) => {
-      let {startX, endX} = this.state;
-      if(!startX || !endX) {
+      let { startX, endX } = this.state;
+      if (!startX || !endX) {
         return;
       }
 
       let deltaX = Math.abs(endX - startX);
-      if(deltaX < (is / 10)){
-        this.props.onClick();
-        this.setState({startX: null, endX: null});
+      if (deltaX < (is / 10)) {
+        this.props.onToggleSelect();
+        this.setState({ startX: null, endX: null });
       }
     }
 
     let onLineDragStop = (e, dd) => {
-      this.setState({endX: e.clientX });
+      this.setState({ endX: e.clientX });
       let invertedX = xScale.invert(dd.lastX + xScale(0));
       let newPosition = { left: position.left + invertedX, right: position.right + invertedX };
-      
-      if(!isEqual(newPosition, this.props.position)){
-        this.props.moveLine(newPosition);
+
+      if (!isEqual(newPosition, this.props.position)) {
+        this.props.onMoveLine(newPosition);
       }
     }
 
@@ -104,7 +95,7 @@ export default class Line extends React.Component {
       right: ((domain.max - position.right) / interval) * is
     }
 
-    let lineClass ='line' + (selected ? ' selected' : '');
+    let lineClass = 'line' + (selected ? ' selected' : '');
 
     return <Draggable
       axis="x"
@@ -123,28 +114,47 @@ export default class Line extends React.Component {
           ></line>
           <Point
             selected={selected}
-            empty={!fill.left}
+            empty={empty.left}
             interval={interval}
             bounds={{ left: domain.min - position.left, right: domain.max - position.left }}
             position={position.left}
-            onDrag={onLeftDrag.bind(this)}
-            onMoveDot={onMoveLeftDot.bind(this)}
+            onDrag={onDragLeft}
+            onMove={onMoveLeft}
           />
           <Point
             selected={selected}
-            empty={!fill.right}
+            empty={empty.right}
             interval={interval}
             bounds={{ left: domain.min - position.right, right: domain.max - position.right }}
             position={position.right}
-            onDrag={onRightDrag.bind(this)}
-            onMoveDot={onMoveRightDot.bind(this)}
+            onDrag={onDragRight}
+            onMove={onMoveRight}
           />
         </g>
       </g>
-    </Draggable >
+    </Draggable>
   }
 }
 
+Line.propTypes = extend(basePropTypes(), {
+  empty: PT.shape({
+    left: PT.bool.isRequired,
+    right: PT.bool.isRequired
+  }).isRequired,
+  position: PT.shape({
+    left: PT.number.isRequired,
+    right: PT.number.isRequired
+  }).isRequired,
+  y: PT.number,
+  selected: PT.bool,
+  onMoveLine: PT.func.isRequired,
+  onToggleSelect: PT.func.isRequired
+});
+
+Line.defaultProps = {
+  selected: false,
+  y: 0
+}
 
 Line.contextTypes = {
   xScale: PT.func.isRequired,

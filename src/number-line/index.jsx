@@ -8,16 +8,19 @@ export default class NumberLine extends React.Component {
   constructor(props, context) {
     super(props, context);
     this.state = {
-      dots: [],
+      selectedElements: [],
       elementType: PointChooser.DEFAULT_TYPE
     }
   }
 
-  addDot(d) {
-    let dots = this.state.dots || [];
-    dots.push({ position: d });
-    this.setState({ dots: dots });
-  }
+  // addDot(d) {
+
+  //   console.log('addDot: ', d, this.state);
+
+  //   // let dots = this.state.dots || [];
+  //   // dots.push({ position: d });
+  //   // this.setState({ dots: dots });
+  // }
 
   toggleDot(d) {
     if (d) {
@@ -40,9 +43,22 @@ export default class NumberLine extends React.Component {
     this.setState({ elementType: t });
   }
 
-  render() {
+  addElement(x) {
+    console.log('[addElement] x: ', x);
 
-    let dotsSelected = this.state.dots.some(d => d.selected);
+    let elementData = {
+      domainPosition: x,
+      type: 'point', //this.state.elementType,
+      pointType: 'empty'
+    }
+
+    this.props.onAddElement(elementData);
+  }
+
+  render() {
+    let addElement = this.addElement.bind(this);
+
+    let dotsSelected = false ///*this.state.dots*/[].some(d => d.selected);
     let config = this.props.model.config;
     let { domain: domainArray } = config;
     let domain = {
@@ -55,16 +71,13 @@ export default class NumberLine extends React.Component {
       minor: config.snapPerTick || 0,
     }
 
-    ticks.interval = getInterval(domain, ticks);
-
     let graphProps = {
       domain,
       ticks,
-      width: 600,
+      interval: getInterval(domain, ticks),
+      width: 900,
       height: 400
     }
-
-
 
     return <div className="view-number-line">
       <div className="interactive-graph">
@@ -78,8 +91,8 @@ export default class NumberLine extends React.Component {
         <Graph
           {...graphProps}
           toggleDot={this.toggleDot.bind(this)}
-          dots={this.state.dots}
-          onAddDot={this.addDot.bind(this)}
+          elements={this.props.session.answer}
+          onAddElement={addElement}
           onMoveDot={this.moveDot.bind(this)}
           debug={true} />
       </div>

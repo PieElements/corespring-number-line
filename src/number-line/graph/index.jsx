@@ -7,9 +7,9 @@ import Point from './elements/point';
 import Line from './line';
 import Arrow from './arrow';
 import Ticks, { TickValidator } from './ticks';
-import { snapTo } from './tick-utils';
+import { getInterval, snapTo } from './tick-utils';
 
-const getXScale = (min, max, width) => {
+const getXScale = (min, max, width, padding) => {
 
   if (min === undefined || max === undefined || width === undefined) {
     throw new Error('missing min/max/width');
@@ -17,12 +17,9 @@ const getXScale = (min, max, width) => {
 
   return scaleLinear()
     .domain([min, max])
-    .range([40, width - 40]);
+    .range([padding, width - padding]);
 };
 
-const getSnapValue = (min, max, interval) => {
-  return (v) => snapTo(min, max, interval, value);
-}
 
 let Debug = (props) => {
   return <div>
@@ -37,20 +34,30 @@ export default class NumberLineGraph extends React.Component {
 
   constructor(props) {
     super(props);
+    this.state = {}
+  }
+
+  xScaleFn() {
+    let { domain, width } = this.props;
+    return getXScale(domain.min, domain.max, width, 20);
+  }
+
+  snapValueFn() {
+    let { domain, interval } = this.props;
+    return snapTo.bind(null, domain.min, domain.max, interval);
   }
 
   getChildContext() {
-    let { domain, width, ticks } = this.props;
     return {
-      xScale: getXScale(domain.min, domain.max, width),
-      snapValue: getSnapValue(domain.min, domain.max, ticks.interval)
+      xScale: this.xScaleFn(),
+      snapValue: this.snapValueFn()
     };
   }
 
   componentDidMount() {
     let svg = select(this.svg);
-    let addDot = this.addDot.bind(this);
-    // let xScale = this.xScale;
+    let addElement = this.addElement.bind(this);
+    let xScale = this.xScaleFn();
     let getState = () => this.state;
     /** 
      * Note: we use d3 click + mouse to give us domain values directly.
@@ -58,42 +65,29 @@ export default class NumberLineGraph extends React.Component {
      */
     svg.on('click', function () {
       let s = getState();
-      if (s && s.isDragging) {
-        //console.log('is dragging - skip');
-      } else {
+      if (s && !s.isDragging) {
         var coords = mouse(this);
-        let x = Math.round(xScale.invert(coords[0]))
-        addDot(x);
+        let x = xScale.invert(coords[0]);
+        addElement(x);
       }
     });
   }
 
-  addDot(x) {
-
-    let { ticks, domain } = this.props;
-    let i = ticks.interval;
-    let lowerBound = domain.min;
-    do {
-      lowerBound += i;
-    } while ((lowerBound + i) < x)
-
-    let upperBound = lowerBound + i;
-    let upperDistance = Math.abs(x - upperBound);
-    let lowerDistance = Math.abs(x - lowerBound);
-    let v = upperDistance > lowerDistance ? lowerBound : upperBound;
-    console.log('add dot at: ', v);
-    this.props.onAddDot(v);
+  addElement(x) {
+    let snapFn = this.snapValueFn();
+    let v = snapFn(x);
+    this.props.onAddElement(v);
   }
 
   render() {
 
-    let { domain, width, ticks, height, toggleDot } = this.props;
-    const xScale = getXScale(domain.min, domain.max, width);
+    let { domain, width, ticks, height, interval, onToggleElement } = this.props;
+    let { min, max } = domain;
+    const xScale = this.xScaleFn();
 
     if (domain.max <= domain.min) {
       return <div>{domain.max} is less than or equal to {domain.min}</div>
     } else {
-      const { interval } = ticks;
       const distance = domain.max - domain.min;
       const lineY = height - 30;
 
@@ -106,14 +100,62 @@ export default class NumberLineGraph extends React.Component {
 
       let stacks = [];
 
-      let dots = this.props.dots.map((d, index) => {
-        let position = Number(d.position);
+      let elements = this.props.elements.map((el, index) => {
+        let y = (index + 1) * 20;
+        console.log('el: ', el);
+        if (el.type === 'line') {
+          let position = { left: el.domainPosition, right: el.domainPosition + el.size }
+          let fill = { left: el.leftPoint === 'full', right: el.rightPoint === 'full' };
+          return <Line
+            domain={{ min: min, max: max }}
+            moveLine={moveLine}
+            position={position}
+            selected={el.selected}
+            onClick={() => { }}
+            interval={interval}
+            y={y}
+            fill={fill}
+            xScale={xScale} />
+        } else if (el.type === 'point') {
+          let bounds = { left: min - el.domainPosition, right: max - el.domainPosition };
 
+          return <Point
+            empty={el.pointType === 'empty'}
+            interval={interval}
+            y={y}
+            position={el.domainPosition}
+            bounds={bounds}
+            onDragStop={() => { }}
+            onDragStart={() => { }}
+            onClick={() => { }}
+            onMoveDot={() => { }}
+            selected={el.selected}
+          />
+        } else if (el.type === 'ray') {
+          // let position = { left: el.domainPosition, right: el.domainPosition + el.size }
+          let fill = { left: el.leftPoint === 'full', right: el.rightPoint === 'full' };
+          return <Ray
+            domain={{ min: min, max: max }}
+            direction={el.direction}
+            moveLine={moveLine}
+            position={el.domainPosition}
+            selected={el.selected}
+            onClick={() => { }}
+            interval={interval}
+            y={y}
+            empty={el.pointType === 'empty'}
+            xScale={xScale} />
+        }
+      });
+
+      /*let dots = this.props.dots.map((d, index) => {
+        let position = Number(d.position);
+  
         stacks[position] = stacks[position] || [];
         let stack = stacks[position];
-
+  
         stack.push(d);
-
+  
         return <Point
           key={index}
           min={domain.min}
@@ -126,9 +168,9 @@ export default class NumberLineGraph extends React.Component {
           xScale={xScale}
           onDragStart={onDragStart}
           onDragStop={onDragStop}
-          onClick={toggleDot.bind(null, d)}
-          onMoveDot={this.props.onMoveDot.bind(null, d)} />
-      });
+          onClick={onToggleElement.bind(null, d)}
+          onMoveElement={this.props.onMoveElement.bind(null, d)} />
+      });*/
 
       let debug = this.props.debug ? <Debug
         dots={this.props.dots || []}
@@ -151,12 +193,14 @@ export default class NumberLineGraph extends React.Component {
             y={lineY}
             domain={domain}
             ticks={ticks}
+            interval={interval}
             xScale={xScale} />
-          {dots}
+          {elements}
         </svg>
         {debug}
       </div>;
     }
+
   }
 }
 
@@ -203,10 +247,12 @@ NumberLineGraph.propTypes = {
     max: PT.number.isRequired
   }).isRequired,
   ticks: TickValidator,
+  interval: PT.number.isRequired,
   width: PT.number.isRequired,
   height: PT.number.isRequired,
-  toggleDot: PT.func.isRequired,
-  onMoveDot: PT.func.isRequired,
+  onToggleElement: PT.func.isRequired,
+  onMoveElement: PT.func.isRequired,
+  onAddElement: PT.func.isRequired,
   debug: PT.bool
 }
 

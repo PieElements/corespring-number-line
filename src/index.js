@@ -16,6 +16,9 @@ export default class CorespringNumberLine extends HTMLElement {
 
   set session(s) {
     this._session = s;
+    if (s) {
+      this._session.answer = this._session.answer || [];
+    }
     this._render();
   }
 
@@ -24,10 +27,24 @@ export default class CorespringNumberLine extends HTMLElement {
     this._render();
   }
 
+  addElement(data) {
+    console.log('add element..', this)
+    if (!this._session) {
+      return;
+    }
+    this._session.answer = this._session.answer || [];
+    this._session.answer.push(data);
+    this._render();
+  }
+
   _render() {
     try {
       if (this._model && this._session) {
-        let props = { model: this._model, session: this._session };
+        let props = {
+          model: this._model,
+          session: this._session,
+          onAddElement: this.addElement.bind(this)
+        };
         let el = React.createElement(NumberLine, props)
         ReactDOM.render(el, this);
       }
