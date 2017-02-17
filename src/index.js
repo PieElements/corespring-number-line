@@ -28,7 +28,6 @@ export default class CorespringNumberLine extends HTMLElement {
   }
 
   addElement(data) {
-    console.log('add element..', this)
     if (!this._session) {
       return;
     }
@@ -37,13 +36,34 @@ export default class CorespringNumberLine extends HTMLElement {
     this._render();
   }
 
+  moveElement(index, el, position) {
+    let answer = this._session.answer[index];
+    if (!answer) {
+      throw new Error('cant find element at index: ', index);
+    }
+
+    answer.domainPosition = position;
+
+    this._render();
+  }
+
+  deleteElements(indices) {
+    this._session.answer = this._session.answer.filter((v, index) => {
+      return !indices.some(d => d === index);
+    });
+    this._render();
+  }
+
   _render() {
     try {
       if (this._model && this._session) {
+        console.log(JSON.stringify(this._session.answer));
         let props = {
           model: this._model,
           session: this._session,
-          onAddElement: this.addElement.bind(this)
+          onAddElement: this.addElement.bind(this),
+          onMoveElement: this.moveElement.bind(this),
+          onDeleteElements: this.deleteElements.bind(this)
         };
         let el = React.createElement(NumberLine, props)
         ReactDOM.render(el, this);

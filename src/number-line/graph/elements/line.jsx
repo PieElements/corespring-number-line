@@ -97,6 +97,12 @@ export default class Line extends React.Component {
 
     let lineClass = 'line' + (selected ? ' selected' : '');
 
+    let onDragStart = this.props.onDragStart.bind(this);
+    let onDragStop = this.props.onDragStop.bind(this);
+
+    let common = {
+      onDragStart, onDragStop, interval, selected
+    }
     return <Draggable
       axis="x"
       handle=".line-handle"
@@ -113,18 +119,16 @@ export default class Line extends React.Component {
             x1={xScale(left)} x2={xScale(right)}
           ></line>
           <Point
-            selected={selected}
+            {...common}
             empty={empty.left}
-            interval={interval}
             bounds={{ left: domain.min - position.left, right: domain.max - position.left }}
             position={position.left}
             onDrag={onDragLeft}
             onMove={onMoveLeft}
           />
           <Point
-            selected={selected}
+            {...common}
             empty={empty.right}
-            interval={interval}
             bounds={{ left: domain.min - position.right, right: domain.max - position.right }}
             position={position.right}
             onDrag={onDragRight}
@@ -148,7 +152,9 @@ Line.propTypes = extend(basePropTypes(), {
   y: PT.number,
   selected: PT.bool,
   onMoveLine: PT.func.isRequired,
-  onToggleSelect: PT.func.isRequired
+  onToggleSelect: PT.func.isRequired,
+  onDragStart: PT.func,
+  onDragStop: PT.func
 });
 
 Line.defaultProps = {

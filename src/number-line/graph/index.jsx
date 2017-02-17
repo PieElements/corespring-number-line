@@ -4,10 +4,12 @@ import times from 'lodash/times';
 import { scaleLinear } from 'd3-scale';
 import { select, mouse } from 'd3-selection';
 import Point from './elements/point';
-import Line from './line';
+import Line from './elements/line';
+import BaseLine from './line';
 import Arrow from './arrow';
 import Ticks, { TickValidator } from './ticks';
 import { getInterval, snapTo } from './tick-utils';
+import Stack from './stacks';
 
 const getXScale = (min, max, width, padding) => {
 
@@ -98,37 +100,58 @@ export default class NumberLineGraph extends React.Component {
         }, 100);
       }
 
-      let stacks = [];
+
+      let movePoint = (index, el, position) => {
+        this.props.onMoveElement(index, el, position);
+      }
+
+      let stacks = [new Stack(domain)];
 
       let elements = this.props.elements.map((el, index) => {
-        let y = (index + 1) * 20;
-        console.log('el: ', el);
+
+        let stack = stacks.find(stack => stack.add(el));
+        let stackIndex = stacks.indexOf(stack);
+        if (stackIndex === -1) {
+          stack = new Stack(domain);
+          stacks.push(stack);
+          stack.add(el);
+          stackIndex = stacks.indexOf(stack);
+        }
+
+        let commonProps = {
+          onDragStart, onDragStop, key: index
+        }
+
+        let y = lineY - ((stackIndex) * 25);
+
         if (el.type === 'line') {
-          let position = { left: el.domainPosition, right: el.domainPosition + el.size }
-          let fill = { left: el.leftPoint === 'full', right: el.rightPoint === 'full' };
+          // let position = { left: el.domainPosition, right: el.domainPosition + el.size }
+          let empty = { left: el.leftPoint === 'full', right: el.rightPoint === 'full' };
           return <Line
+            {...commonProps}
             domain={{ min: min, max: max }}
-            moveLine={moveLine}
-            position={position}
+            onMoveLine={() => { }}
+            onToggleSelect={() => { }}
+            position={el.position}
             selected={el.selected}
             onClick={() => { }}
             interval={interval}
             y={y}
-            fill={fill}
+            empty={empty}
             xScale={xScale} />
         } else if (el.type === 'point') {
           let bounds = { left: min - el.domainPosition, right: max - el.domainPosition };
 
           return <Point
+
             empty={el.pointType === 'empty'}
             interval={interval}
             y={y}
             position={el.domainPosition}
             bounds={bounds}
-            onDragStop={() => { }}
-            onDragStart={() => { }}
-            onClick={() => { }}
-            onMoveDot={() => { }}
+            {...commonProps}
+            onClick={this.props.onToggleElement.bind(null, index, el)}
+            onMove={movePoint.bind(null, index, el)}
             selected={el.selected}
           />
         } else if (el.type === 'ray') {
@@ -181,7 +204,7 @@ export default class NumberLineGraph extends React.Component {
           ref={svg => this.svg = svg}
           width={width}
           height={height}>
-          <Line y={lineY} width={width} />
+          <BaseLine y={lineY} width={width} />
           <Arrow
             y={lineY} />
           <Arrow
