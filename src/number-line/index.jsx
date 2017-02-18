@@ -25,6 +25,10 @@ export default class NumberLine extends React.Component {
     this.setState({ selectedElements: selected });
   }
 
+  deselectElements() {
+    this.setState({ selectedElements: [] });
+  }
+
   moveDot(d, position) {
     d.position = position;
     this.setState({});
@@ -105,6 +109,7 @@ export default class NumberLine extends React.Component {
           onAddElement={addElement}
           onMoveElement={this.props.onMoveElement}
           onToggleElement={this.toggleElement.bind(this)}
+          onDeselectElements={this.deselectElements.bind(this)}
           debug={true} />
       </div>
     </div>

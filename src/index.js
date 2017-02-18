@@ -42,7 +42,7 @@ export default class CorespringNumberLine extends HTMLElement {
       throw new Error('cant find element at index: ', index);
     }
 
-    answer.domainPosition = position;
+    answer.position = position;
 
     this._render();
   }

@@ -5,6 +5,7 @@ import { scaleLinear } from 'd3-scale';
 import { select, mouse } from 'd3-selection';
 import Point from './elements/point';
 import Line from './elements/line';
+import Ray from './elements/ray';
 import BaseLine from './line';
 import Arrow from './arrow';
 import Ticks, { TickValidator } from './ticks';
@@ -56,23 +57,25 @@ export default class NumberLineGraph extends React.Component {
     };
   }
 
+  /** 
+   * Note: we use d3 click + mouse to give us domain values directly.
+   * Saves us having to calculate them ourselves from a MouseEvent.
+   */
+  onRectClick(rect) {
+    let { elements } = this.props;
+    let anyElementSelected = elements.some(e => e.selected);
+    if (anyElementSelected) {
+      this.props.onDeselectElements();
+    } else {
+      var coords = mouse(rect._groups[0][0]);
+      let x = this.xScaleFn().invert(coords[0]);
+      this.addElement(x);
+    }
+  }
+
   componentDidMount() {
-    let svg = select(this.svg);
-    let addElement = this.addElement.bind(this);
-    let xScale = this.xScaleFn();
-    let getState = () => this.state;
-    /** 
-     * Note: we use d3 click + mouse to give us domain values directly.
-     * Saves us having to calculate them ourselves from a MouseEvent.
-     */
-    svg.on('click', function () {
-      let s = getState();
-      if (s && !s.isDragging) {
-        var coords = mouse(this);
-        let x = xScale.invert(coords[0]);
-        addElement(x);
-      }
-    });
+    let rect = select(this.rect);
+    rect.on('click', this.onRectClick.bind(this, rect));
   }
 
   addElement(x) {
@@ -83,8 +86,17 @@ export default class NumberLineGraph extends React.Component {
 
   render() {
 
-    let { domain, width, ticks, height, interval, onToggleElement } = this.props;
+    let {
+      domain,
+      width,
+      ticks,
+      height,
+      interval,
+      onToggleElement,
+      onMoveElement } = this.props;
+
     let { min, max } = domain;
+
     const xScale = this.xScaleFn();
 
     if (domain.max <= domain.min) {
@@ -92,18 +104,6 @@ export default class NumberLineGraph extends React.Component {
     } else {
       const distance = domain.max - domain.min;
       const lineY = height - 30;
-
-      let onDragStart = () => this.setState({ isDragging: true });
-      let onDragStop = () => {
-        setTimeout(() => {
-          this.setState({ isDragging: false });
-        }, 100);
-      }
-
-
-      let movePoint = (index, el, position) => {
-        this.props.onMoveElement(index, el, position);
-      }
 
       let stacks = [new Stack(domain)];
 
@@ -118,11 +118,19 @@ export default class NumberLineGraph extends React.Component {
           stackIndex = stacks.indexOf(stack);
         }
 
+        let y = lineY - ((stackIndex) * 25);
+
         let commonProps = {
-          onDragStart, onDragStop, key: index
+          onDragStart,
+          onDragStop,
+          key: index,
+          y,
+          selected: el.selected,
+          interval,
         }
 
-        let y = lineY - ((stackIndex) * 25);
+        let toggleElement = onToggleElement.bind(null, index, el)
+        let moveElement = onMoveElement.bind(null, index, el);
 
         if (el.type === 'line') {
           // let position = { left: el.domainPosition, right: el.domainPosition + el.size }
@@ -130,70 +138,39 @@ export default class NumberLineGraph extends React.Component {
           return <Line
             {...commonProps}
             domain={{ min: min, max: max }}
-            onMoveLine={() => { }}
-            onToggleSelect={() => { }}
+            onMoveLine={moveElement}
+            onToggleSelect={toggleElement}
             position={el.position}
-            selected={el.selected}
-            onClick={() => { }}
-            interval={interval}
-            y={y}
             empty={empty}
             xScale={xScale} />
         } else if (el.type === 'point') {
-          let bounds = { left: min - el.domainPosition, right: max - el.domainPosition };
+
+          let bounds = {
+            left: min - el.position,
+            right: max - el.position
+          };
 
           return <Point
-
-            empty={el.pointType === 'empty'}
-            interval={interval}
-            y={y}
-            position={el.domainPosition}
-            bounds={bounds}
             {...commonProps}
-            onClick={this.props.onToggleElement.bind(null, index, el)}
-            onMove={movePoint.bind(null, index, el)}
-            selected={el.selected}
+            empty={el.pointType === 'empty'}
+            position={el.position}
+            bounds={bounds}
+            onClick={toggleElement}
+            onMove={moveElement}
           />
         } else if (el.type === 'ray') {
-          // let position = { left: el.domainPosition, right: el.domainPosition + el.size }
-          let fill = { left: el.leftPoint === 'full', right: el.rightPoint === 'full' };
           return <Ray
+            {...commonProps}
             domain={{ min: min, max: max }}
             direction={el.direction}
-            moveLine={moveLine}
-            position={el.domainPosition}
-            selected={el.selected}
-            onClick={() => { }}
-            interval={interval}
-            y={y}
+            position={el.position}
+            onMove={moveElement}
+            onToggleSelect={toggleElement}
+            width={width}
             empty={el.pointType === 'empty'}
-            xScale={xScale} />
+          />
         }
       });
-
-      /*let dots = this.props.dots.map((d, index) => {
-        let position = Number(d.position);
-  
-        stacks[position] = stacks[position] || [];
-        let stack = stacks[position];
-  
-        stack.push(d);
-  
-        return <Point
-          key={index}
-          min={domain.min}
-          max={domain.max}
-          height={height}
-          interval={interval}
-          ySlot={stack.length}
-          position={position}
-          selected={d.selected}
-          xScale={xScale}
-          onDragStart={onDragStart}
-          onDragStop={onDragStop}
-          onClick={onToggleElement.bind(null, d)}
-          onMoveElement={this.props.onMoveElement.bind(null, d)} />
-      });*/
 
       let debug = this.props.debug ? <Debug
         dots={this.props.dots || []}
@@ -201,7 +178,6 @@ export default class NumberLineGraph extends React.Component {
 
       return <div>
         <svg
-          ref={svg => this.svg = svg}
           width={width}
           height={height}>
           <BaseLine y={lineY} width={width} />
@@ -218,12 +194,19 @@ export default class NumberLineGraph extends React.Component {
             ticks={ticks}
             interval={interval}
             xScale={xScale} />
+          {/* The click layer is above the drawn elements */}
+          <rect
+            ref={rect => this.rect = rect}
+            //need to have a fill for it to be clickable
+            fill="red"
+            fillOpacity="0.0"
+            width={width}
+            height={height}></rect>
           {elements}
         </svg>
         {debug}
       </div>;
     }
-
   }
 }
 
@@ -231,39 +214,7 @@ NumberLineGraph.childContextTypes = {
   xScale: PT.func.isRequired,
   snapValue: PT.func.isRequired
 };
-/*
 
-              circle{
-              cursor:pointer;
-              opacity: 1;
-              transition: r 200ms ease-in, opacity 200ms ease-in;
-            }
-
-            circle.selected{
-              fill: red;
-            }
-            
-            .react-draggable-dragging {
-              opacity: 0.2;
-              r: 12;
-            }
-
-            .react-draggable, .cursor {
-              cursor: move;
-            }
-            .no-cursor {
-              cursor: auto;
-            }
-            svg{
-              user-select: none;
-            }
-            text{
-              user-select: none;
-              cursor: pointer;
-              font-family: sans-serif;
-              font-size: 12px;
-            }
-            */
 NumberLineGraph.propTypes = {
   domain: PT.shape({
     min: PT.number.isRequired,

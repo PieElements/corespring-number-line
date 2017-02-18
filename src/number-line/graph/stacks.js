@@ -9,6 +9,10 @@ export default function Stack(domain) {
 
     let elementRange = getRange(el);
 
+    if (elementRange.left < domain.min || elementRange.right > domain.max) {
+      return false;
+    }
+
     let touchesExisting = elements.some(e => touchesRange(e, elementRange));
 
     if (touchesExisting) {
@@ -25,18 +29,29 @@ export default function Stack(domain) {
 
   let touchesRange = (el, candidate) => {
     let elr = getRange(el);
-
-    // candidate: 1 - - - - 5
-    // elr1:        2 - - - - 6
     let touches = (candidate.left <= elr.left && candidate.right >= elr.right);
     return touches;
   }
 
   let getRange = (el) => {
-    if (el.type.startsWith('p')) {
-      return { left: el.domainPosition, right: el.domainPosition }
-    } else if (el.type.startsWith('l')) {
-      return el.position;
+    let { type, position } = el;
+    if (type.startsWith('p')) {
+      return { left: position, right: position }
+    } else if (type.startsWith('l')) {
+      return position;
+    } else if (type.startsWith('r')) {
+      let direction = type.charAt(2) === 'p' ? 'positive' : 'negative';
+      if (direction === 'positive') {
+        return {
+          left: position,
+          right: domain.max
+        }
+      } else {
+        return {
+          left: domain.min,
+          right: position
+        }
+      }
     }
   }
 }

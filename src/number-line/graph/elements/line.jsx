@@ -80,6 +80,10 @@ export default class Line extends React.Component {
       }
     }
 
+    let onRectClick = (e) => {
+      this.props.onToggleSelect();
+    }
+
     let onLineDragStop = (e, dd) => {
       this.setState({ endX: e.clientX });
       let invertedX = xScale.invert(dd.lastX + xScale(0));
@@ -113,10 +117,19 @@ export default class Line extends React.Component {
       onMouseDown={onMouseDown} >
       <g className={lineClass} >
         <g transform={`translate(0, ${y})`}>
+          <rect
+            x={xScale(left)}
+            width={xScale(right) - xScale(left)}
+            fill="red"
+            fillOpacity="0.0"
+            y="-8"
+            height={16}
+            onClick={onRectClick}
+          ></rect>
           <line
-            onClick={onLineClick}
             className="line-handle"
             x1={xScale(left)} x2={xScale(right)}
+            onClick={onLineClick}
           ></line>
           <Point
             {...common}

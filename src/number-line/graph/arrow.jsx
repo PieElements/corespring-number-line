@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { PropTypes as PT } from 'react';
 
 export default function Arrow(props) {
 
@@ -13,6 +13,18 @@ export default function Arrow(props) {
   return <path
     d="m 0,0 8,-5 0,10 -8,-5"
     transform={transform}
-    style={{ fill: '#000000', stroke: '#000000' }} />
+    className="arrow" />
 }
 
+
+Arrow.propTypes = {
+  y: PT.number,
+  x: PT.number,
+  direction: PT.oneOf(['left', 'right'])
+}
+
+Arrow.defaultProps = {
+  y: 0,
+  x: 0,
+  direction: 'left'
+}
