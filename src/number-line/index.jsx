@@ -65,16 +65,19 @@ export default class NumberLine extends React.Component {
   }
 
   render() {
+
+    let disabled = this.props.model.disabled;
+
     let addElement = this.addElement.bind(this);
 
-    let dotsSelected = this.state.selectedElements && this.state.selectedElements.length > 0;
-    // let config = this.props.model.config;
+    let dotsSelected = !disabled && this.state.selectedElements && this.state.selectedElements.length > 0;
 
     let domain = this.getDomain();
 
     let ticks = this.getTicks();
 
     let graphProps = {
+      disabled,
       domain,
       ticks,
       interval: getInterval(domain, ticks),
@@ -96,6 +99,7 @@ export default class NumberLine extends React.Component {
 
     return <div className="view-number-line">
       <div className="interactive-graph">
+        {JSON.stringify(disabled)}
         <PointChooser
           elementType={this.state.elementType}
           showDeleteButton={dotsSelected}

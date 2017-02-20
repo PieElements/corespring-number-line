@@ -14,7 +14,21 @@
     stroke-width: 5px;
     transition: opacity 150ms linear, stroke-width 400ms linear;
   }  
+
+  &.correct {
+    .line-handle{
+      cursor: inherit;
+      stroke: green;
+    }
+  } 
   
+  &.incorrect {
+    .line-handle{
+      cursor: inherit;
+      stroke: orange;
+    }
+  } 
+
   &.react-draggable-dragging {
     .line-handle{
       opacity: 0.25;

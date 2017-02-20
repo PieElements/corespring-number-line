@@ -9,6 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "classnames": "^2.2.5",
     "d3-scale": "^1.0.4",
     "d3-selection": "^1.0.3",
     "lodash": "^4.17.4",

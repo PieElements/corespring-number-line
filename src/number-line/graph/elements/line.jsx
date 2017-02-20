@@ -5,6 +5,7 @@ import Draggable, { getDragPosition } from '../../../draggable';
 import isEqual from 'lodash/isEqual';
 import extend from 'lodash/extend';
 import { basePropTypes } from './base';
+import classNames from 'classnames';
 
 require('./line.less');
 
@@ -48,7 +49,9 @@ export default class Line extends React.Component {
       position,
       domain,
       y,
-      selected
+      selected,
+      disabled,
+      correct
     } = this.props;
 
     let { xScale } = this.context;
@@ -99,13 +102,18 @@ export default class Line extends React.Component {
       right: ((domain.max - position.right) / interval) * is
     }
 
-    let lineClass = 'line' + (selected ? ' selected' : '');
+    var lineClass = classNames('line', {
+      'selected': selected,
+      'correct': correct === true,
+      'incorrect': correct === false
+    });
 
     let common = {
-      interval, selected
+      interval, selected, disabled, correct
     }
 
     return <Draggable
+      disabled={disabled}
       axis="x"
       handle=".line-handle"
       grid={[is]}
@@ -162,6 +170,8 @@ Line.propTypes = extend(basePropTypes(), {
   }).isRequired,
   y: PT.number,
   selected: PT.bool,
+  disabled: PT.bool,
+  correct: PT.bool,
   onMoveLine: PT.func.isRequired,
   onToggleSelect: PT.func.isRequired,
   onDragStart: PT.func,
@@ -170,7 +180,9 @@ Line.propTypes = extend(basePropTypes(), {
 
 Line.defaultProps = {
   selected: false,
-  y: 0
+  y: 0,
+  disabled: false,
+  correct: undefined
 }
 
 Line.contextTypes = {

@@ -62,7 +62,14 @@ export default class NumberLineGraph extends React.Component {
    * Saves us having to calculate them ourselves from a MouseEvent.
    */
   onRectClick(rect) {
-    let { elements } = this.props;
+
+
+    let { elements, disabled } = this.props;
+
+    if (disabled) {
+      return;
+    }
+
     let anyElementSelected = elements.some(e => e.selected);
     if (anyElementSelected) {
       this.props.onDeselectElements();
@@ -93,7 +100,8 @@ export default class NumberLineGraph extends React.Component {
       height,
       interval,
       onToggleElement,
-      onMoveElement } = this.props;
+      onMoveElement,
+      disabled } = this.props;
 
     let { min, max } = domain;
 
@@ -123,6 +131,8 @@ export default class NumberLineGraph extends React.Component {
           y,
           selected: el.selected,
           interval,
+          disabled,
+          correct: el.correct
         }
 
         let toggleElement = onToggleElement.bind(null, index, el)

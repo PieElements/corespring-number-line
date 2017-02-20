@@ -1,5 +1,6 @@
 import React, { PropTypes as PT } from 'react';
 import Draggable, { getDragPosition } from '../../../draggable';
+import classNames from 'classnames';
 
 require('./point.less');
 
@@ -16,6 +17,8 @@ export default class Point extends React.Component {
       bounds,
       selected,
       position,
+      disabled,
+      correct,
       empty } = this.props;
 
     let { snapValue, xScale } = this.context;
@@ -54,9 +57,16 @@ export default class Point extends React.Component {
       }
     }
 
-    let className = 'point' + (selected ? ' selected' : '');
+    let circleClass = classNames('point', {
+      selected,
+      correct: correct === true,
+      incorrect: correct === false,
+      empty
+    });
+
 
     return <Draggable
+      disabled={disabled}
       onMouseDown={onMouseDown}
       onStart={onDragStart}
       onDrag={onDrag}
@@ -64,12 +74,11 @@ export default class Point extends React.Component {
       axis="x"
       grid={[is]}
       bounds={scaledBounds}>
+      {/*fill={empty ? 'white' : 'black'}*/}
       <circle
         r="5"
-        fill={empty ? 'white' : 'black'}
-        stroke="black"
         strokeWidth="3"
-        className={className}
+        className={circleClass}
         cx={xScale(position)}
         cy={y} />
     </Draggable>;
@@ -79,7 +88,9 @@ export default class Point extends React.Component {
 Point.defaultProps = {
   y: 0,
   selected: false,
-  empty: false
+  empty: false,
+  disabled: false,
+  correct: undefined
 }
 
 Point.propTypes = {
@@ -92,6 +103,8 @@ Point.propTypes = {
     right: PT.number.isRequired
   }),
   selected: PT.bool,
+  disabled: PT.bool,
+  correct: PT.bool,
   empty: PT.bool,
   y: PT.number,
   onClick: PT.func.isRequired,

@@ -38,6 +38,7 @@ export default class Ray extends React.Component {
       domain,
       y,
       selected,
+      disabled,
       width
     } = this.props;
 
@@ -69,6 +70,7 @@ export default class Ray extends React.Component {
         x1={x1} x2={x2}
       ></line>
       <Point
+        disabled={disabled}
         selected={selected}
         empty={empty}
         interval={interval}
@@ -88,6 +90,7 @@ export default class Ray extends React.Component {
 Ray.propTypes = extend(basePropTypes(), {
   width: PT.number.isRequired,
   selected: PT.bool,
+  disabled: PT.bool,
   empty: PT.bool,
   direction: PT.oneOf(['positive', 'negative']),
   y: PT.number,
@@ -99,7 +102,8 @@ Ray.propTypes = extend(basePropTypes(), {
 Ray.defaultProps = {
   selected: false,
   direction: 'positive',
-  y: 0
+  y: 0,
+  disabled: false
 }
 
 Ray.contextTypes = {
