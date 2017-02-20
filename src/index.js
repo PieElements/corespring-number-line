@@ -1,6 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import NumberLine from './number-line';
+import cloneDeep from 'lodash/cloneDeep';
+
 require('./index.less');
 
 export default class CorespringNumberLine extends HTMLElement {
@@ -37,9 +39,22 @@ export default class CorespringNumberLine extends HTMLElement {
   }
 
   moveElement(index, el, position) {
+
     let answer = this._session.answer[index];
+
     if (!answer) {
       throw new Error('cant find element at index: ', index);
+    }
+
+    if (el.type === 'line' && position.left === position.right) {
+      this._render();
+      return;
+    }
+
+    if (el.type === 'line' && position.left > position.right && el.leftPoint !== el.rightPoint) {
+      let old = cloneDeep(answer);
+      answer.leftPoint = old.rightPoint;
+      answer.rightPoint = old.leftPoint;
     }
 
     answer.position = position;
@@ -57,7 +72,6 @@ export default class CorespringNumberLine extends HTMLElement {
   _render() {
     try {
       if (this._model && this._session) {
-        console.log(JSON.stringify(this._session.answer));
         let props = {
           model: this._model,
           session: this._session,

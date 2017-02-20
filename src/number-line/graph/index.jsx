@@ -130,7 +130,8 @@ export default class NumberLineGraph extends React.Component {
 
         if (el.type === 'line') {
           // let position = { left: el.domainPosition, right: el.domainPosition + el.size }
-          let empty = { left: el.leftPoint === 'full', right: el.rightPoint === 'full' };
+          let empty = { left: el.leftPoint === 'empty', right: el.rightPoint === 'empty' };
+
           return <Line
             {...commonProps}
             domain={{ min: min, max: max }}

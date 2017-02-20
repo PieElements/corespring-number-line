@@ -98,7 +98,7 @@ export default class PointChooser extends React.Component {
   }
 
   deselectType(p) {
-    this.props.onElementType(null);
+    //do nothing we always want a type selected
   }
 
   render() {

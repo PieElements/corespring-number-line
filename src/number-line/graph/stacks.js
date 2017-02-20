@@ -45,8 +45,6 @@ export function Stack(domain) {
     let existing = getRange(el);
     let leftOf = candidate.left < existing.left && candidate.right < existing.left;
     let rightOf = candidate.left > existing.right && candidate.right > existing.right;
-    console.log('existing: ', existing, 'candidate: ', candidate);
-    console.log('leftOf: ', leftOf, 'rightOf: ', rightOf);
     return !(leftOf || rightOf);
   }
 
