@@ -8,8 +8,8 @@ export default class Point extends React.Component {
 
   render() {
 
-    let { 
-      onDragStop, onDrag : onDragCallback,
+    let {
+      onDragStop, onDragStart, onDrag: onDragCallback,
       onClick, onMove,
       interval,
       y,
@@ -28,14 +28,26 @@ export default class Point extends React.Component {
       return snapValue(position + inverted);
     }
 
+    let onStart = (e) => {
+      this.setState({ startX: e.clientX });
+      if (onDragStart) {
+        onDragStart();
+      }
+    }
+
     let onStop = (e, dd) => {
       if (onDragStop) {
         onDragStop();
       }
 
-      if (dd.deltaX === 0) {
+      let endX = e.clientX;
+      let startX = this.state.startX;
+      let deltaX = Math.abs(endX - startX);
+
+      if (deltaX < (is / 10)) {
         if (onClick) {
           onClick();
+          this.setState({ startX: null });
         }
       } else {
         let newPosition = dragPosition(dd.lastX);
@@ -67,7 +79,7 @@ export default class Point extends React.Component {
     return <Draggable
       disabled={disabled}
       onMouseDown={onMouseDown}
-      onStart={this.props.onDragStart}
+      onStart={onStart}
       onDrag={onDrag}
       onStop={onStop}
       axis="x"

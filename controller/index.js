@@ -45,8 +45,10 @@ export function model(question, session, env) {
     let { model } = question;
     if (model.config) {
 
+      let evaluateMode = env.mode === 'evaluate';
+
       let correctResponse = cloneDeep(question.correctResponse);
-      let corrected = env.mode === 'evaluate' ?
+      let corrected = evaluateMode ?
         getCorrected(session ? session.answer || [] : [], correctResponse) :
         null;
 
@@ -56,7 +58,8 @@ export function model(question, session, env) {
         config: model.config,
         disabled,
         corrected: corrected,
-        correctResponse: env.mode  === 'evaluate' ? question.correctResponse : null 
+        correctResponse: evaluateMode ? question.correctResponse : null,
+        emptyAnswer: evaluateMode && (!session.answer || session.answer.length === 0)
       });
     }
     else {

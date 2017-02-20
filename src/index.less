@@ -1,4 +1,3 @@
-
 @number-line-icon-width: 42px;
 @number-line-icon-height: 41px;
 
@@ -75,220 +74,44 @@
   span.element-rep a {
     .style-element(8);
   }
-
-  .bin-icon {
-    vertical-align: -90%;
-    padding: 10px;
-  }
-
-  .bin-icon:hover {
-    color: #aaa;
-    cursor: pointer;
-  }
-}
-
-.remove-element-template {
-  display: inline-block;
-  vertical-align: middle;
-  padding: 10px;
-}
-// circle {
-//   transform-origin: 168px 179px;
-//   transform: scale(1,1);
-// }
-
-// circle:hover
-// {
-//  stroke-width:10px;
-//  transform:scale(1.2,1.2);
-// }
-
-.number-line-dot {
-  cursor: pointer;
 }
 
 .view-number-line {
 
+  .no-response{
+    margin-top: 20px;
+    background-color: #dddddd;
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    svg {
+      height: 30px;
+    }
+    .message{
+      padding-left: 5px;
+    }
+  }
+
   .delete-icon{
     cursor: pointer;
     transition: opacity 100ms linear;
-
     &:hover{
       opacity: 0.5;
     }
   }
 
   svg {
-      // circle{
-      //   cursor:pointer;
-      //   opacity: 1;
-      //   transition: r 200ms ease-in, opacity 200ms ease-in;
-      // }
-
-      // circle.selected{
-      //   fill: red;
-      // }
-            
-      .react-draggable-dragging {
-        opacity: 0.2;
-        r: 12;
-      }
-
-      .react-draggable, .cursor {
-        // cursor: move;
-      }
-      
-      .no-cursor {
-        cursor: auto;
-      }
-      
-      svg{
-        user-select: none;
-      }
-      
-      text{
-        user-select: none;
-        cursor: default;
-        font-family: sans-serif;
-        font-size: 12px;
-      }
-  }
-  .point-groupings {
-    margin: 0;
-    padding: 0;
-    li{
-      .noselect();
-      margin: 4px;
-      display: inline-block;
-      padding: 10px;
-      cursor: pointer;
-      background-color: white;
-      transition: background-color 140ms linear;
-      border-radius: 4px;
-      &.selected, 
-      &.selected:hover 
-      {
-        background-color: #e5e4cf;
-      }
-      &:hover{
-        background-color: #eeeeee;
-      }
+    .react-draggable-dragging {
+      opacity: 0.2;
+      r: 12;
     }
-  }
-  .undo-button-row {
-    text-align: center;
+    
+    .no-cursor {
+      cursor: auto;
+    }
   }
 
   .element-selector {
     .element-selector-template();
   }
-
-  .remove-element {
-    .remove-element-template();
-  }
-
-  .feedback {
-    &.correct, &.incorrect, &.partial {
-      .cs-icon {
-        top: -3px;
-        left: -4px;
-      }
-    }
-  }
-
-  .solution {
-    margin-left: 10px;
-  }
-
-}
-
-.config-number-line {
-
-  .reset-defaults {
-    margin: 15px 0;
-  }
-
-  .interactive-graph {
-    width: 540px;
-    max-width: 540px;
-    margin: auto;
-  }
-
-  .tick-label-override-input-holder {
-    position: relative;
-    .tick-label-override-input {
-      position: absolute;
-      top: -44px;
-      width: 50px;
-    }
-  }
-
-  .sample-description {
-    text-align: center;
-    font-style: italic;
-  }
-
-  .undo-button-row {
-    float: right;
-  }
-
-  .allowed-elements {
-    td {
-      border: none;
-      vertical-align: top;
-      line-height: 22px;
-    }
-  }
-
-  .centered-graph-holder {
-    width: 540px;
-    text-align: center;
-    margin: 0 auto;
-
-    .centered-graph {
-      display: inline-block;
-    }
-  }
-
-  .feedback-panel-header {
-    margin-right: 15px;
-  }
-
-  .collapsable-panel,
-  .correct-response-panel {
-    margin-right: 15px;
-    .panel-heading h4 {
-      font-size: 16px;
-    }
-  }
-
-  .exhibit-panel {
-    margin-top: 20px;
-  }
-
-  .element-selector {
-    .element-selector-template();
-  }
-
-  .remove-element {
-    .remove-element-template();
-  }
-
-  .display-panel .element-selector {
-    margin-bottom: 20px;
-  }
-
-  .row {
-    margin: 10px -15px;
-
-    &.domain-row {
-      margin-bottom: 20px;
-    }
-  }
-
-  .form-control {
-    width: 70px;
-    display: inline-block;
-  }
-
 }

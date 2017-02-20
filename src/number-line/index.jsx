@@ -4,8 +4,9 @@ import Graph from './graph';
 import { getInterval } from './graph/tick-utils';
 import cloneDeep from 'lodash/cloneDeep';
 import { buildElementModel } from './graph/elements/builder';
-import Toggle from 'corespring-correct-answer-toggle'; 
+import Toggle from 'corespring-correct-answer-toggle';
 import isArray from 'lodash/isArray';
+import { NoResponse } from './feedback';
 
 export default class NumberLine extends React.Component {
 
@@ -62,7 +63,7 @@ export default class NumberLine extends React.Component {
   }
 
   deselectElements() {
-    this.setState({selectedElements: []});
+    this.setState({ selectedElements: [] });
   }
 
   render() {
@@ -101,14 +102,14 @@ export default class NumberLine extends React.Component {
     }
 
     let getCorrectAnswerElements = () => {
-        return (model.correctResponse || []).map( r => {
-          r.correct = true;
-          return r;
-        });
-    }    
+      return (model.correctResponse || []).map(r => {
+        r.correct = true;
+        return r;
+      });
+    }
 
-    let elements = showCorrectAnswer ? 
-      getCorrectAnswerElements() : 
+    let elements = showCorrectAnswer ?
+      getCorrectAnswerElements() :
       getAnswerElements();
 
     let deleteElements = () => {
@@ -117,33 +118,35 @@ export default class NumberLine extends React.Component {
     }
 
     let getIcons = () => {
-      if(model.config.availableTypes) {
+      if (model.config.availableTypes) {
         return Object.keys(model.config.availableTypes)
-        .filter(k => model.config.availableTypes[k] )
-        .map(k => k.toLowerCase())
-      }  
+          .filter(k => model.config.availableTypes[k])
+          .map(k => k.toLowerCase())
+      }
     }
 
     let onShowCorrectAnswer = (show) => {
-      this.setState({showCorrectAnswer: show})
+      this.setState({ showCorrectAnswer: show })
     }
-    
+
+    let emptyAnswer = model.emptyAnswer;
+
     return <div className="view-number-line">
       <div className="interactive-graph">
         <Toggle
-          show={isArray(model.correctResponse)}
+          show={isArray(model.correctResponse) && !emptyAnswer}
           toggled={showCorrectAnswer}
           onToggle={onShowCorrectAnswer}
           initialValue={false} />
-          {!disabled && 
-            <PointChooser
-              elementType={this.state.elementType}
-              showDeleteButton={dotsSelected}
-              onDeleteClick={deleteElements}
-              onElementType={this.elementTypeSelected.bind(this)}
-              icons={getIcons()}
-            />
-          }
+        {!disabled &&
+          <PointChooser
+            elementType={this.state.elementType}
+            showDeleteButton={dotsSelected}
+            onDeleteClick={deleteElements}
+            onElementType={this.elementTypeSelected.bind(this)}
+            icons={getIcons()}
+          />
+        }
         <Graph
           {...graphProps}
           elements={elements}
@@ -152,6 +155,11 @@ export default class NumberLine extends React.Component {
           onToggleElement={this.toggleElement.bind(this)}
           onDeselectElements={this.deselectElements.bind(this)}
           debug={false} />
+        {emptyAnswer &&
+          <NoResponse
+            width={graphProps.width - 20}
+            message={'You did not enter a response'} />
+        }
       </div>
     </div>
   }
