@@ -101,12 +101,10 @@ export default class Line extends React.Component {
 
     let lineClass = 'line' + (selected ? ' selected' : '');
 
-    let onDragStart = this.props.onDragStart.bind(this);
-    let onDragStop = this.props.onDragStop.bind(this);
-
     let common = {
-      onDragStart, onDragStop, interval, selected
+      interval, selected
     }
+
     return <Draggable
       axis="x"
       handle=".line-handle"

@@ -1,4 +1,19 @@
-export default function Stack(domain) {
+export default function Stacks(domain) {
+
+  let stacks = [new Stack(domain)];
+
+  this.add = function (el) {
+    let stack = stacks.find(s => s.add(el));
+    if (stacks.indexOf(stack) === -1) {
+      stack = new Stack(domain);
+      stacks.push(stack);
+      stack.add(el);
+    }
+    return stacks.indexOf(stack);
+  }
+}
+
+export function Stack(domain) {
 
   let elements = [];
   /**
@@ -8,7 +23,6 @@ export default function Stack(domain) {
   this.add = function (el) /*boolean*/ {
 
     let elementRange = getRange(el);
-
     if (elementRange.left < domain.min || elementRange.right > domain.max) {
       return false;
     }
@@ -28,28 +42,37 @@ export default function Stack(domain) {
   };
 
   let touchesRange = (el, candidate) => {
-    let elr = getRange(el);
-    let touches = (candidate.left <= elr.left && candidate.right >= elr.right);
-    return touches;
+    let existing = getRange(el);
+    let leftOf = candidate.left < existing.left && candidate.right < existing.left;
+    let rightOf = candidate.left > existing.right && candidate.right > existing.right;
+    console.log('existing: ', existing, 'candidate: ', candidate);
+    console.log('leftOf: ', leftOf, 'rightOf: ', rightOf);
+    return !(leftOf || rightOf);
   }
 
   let getRange = (el) => {
     let { type, position } = el;
-    if (type.startsWith('p')) {
-      return { left: position, right: position }
-    } else if (type.startsWith('l')) {
-      return position;
-    } else if (type.startsWith('r')) {
-      let direction = type.charAt(2) === 'p' ? 'positive' : 'negative';
-      if (direction === 'positive') {
-        return {
-          left: position,
-          right: domain.max
-        }
-      } else {
-        return {
-          left: domain.min,
-          right: position
+
+    switch (type) {
+      case 'point': {
+        return { left: position, right: position }
+        break;
+      }
+      case 'line': {
+        return position;
+        break;
+      }
+      case 'ray': {
+        if (el.direction === 'positive') {
+          return {
+            left: position,
+            right: domain.max
+          }
+        } else {
+          return {
+            left: domain.min,
+            right: position
+          }
         }
       }
     }

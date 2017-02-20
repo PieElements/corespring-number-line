@@ -10,7 +10,7 @@ import BaseLine from './line';
 import Arrow from './arrow';
 import Ticks, { TickValidator } from './ticks';
 import { getInterval, snapTo } from './tick-utils';
-import Stack from './stacks';
+import Stacks from './stacks';
 
 const getXScale = (min, max, width, padding) => {
 
@@ -99,30 +99,26 @@ export default class NumberLineGraph extends React.Component {
 
     const xScale = this.xScaleFn();
 
+
     if (domain.max <= domain.min) {
       return <div>{domain.max} is less than or equal to {domain.min}</div>
     } else {
       const distance = domain.max - domain.min;
       const lineY = height - 30;
 
-      let stacks = [new Stack(domain)];
+      const stacks = new Stacks(domain);
 
       let elements = this.props.elements.map((el, index) => {
 
-        let stack = stacks.find(stack => stack.add(el));
-        let stackIndex = stacks.indexOf(stack);
+        let stackIndex = stacks.add(el);
+
         if (stackIndex === -1) {
-          stack = new Stack(domain);
-          stacks.push(stack);
-          stack.add(el);
-          stackIndex = stacks.indexOf(stack);
+          throw new Error('stack index is -1, cant add element');
         }
 
         let y = lineY - ((stackIndex) * 25);
 
         let commonProps = {
-          onDragStart,
-          onDragStop,
           key: index,
           y,
           selected: el.selected,
