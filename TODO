@@ -1,9 +1,4 @@
-* add dot at min point
-* different element types
-* major/minor ticks
-* integrate w/ session
-* integrate w/ controller
-* slotting the element types on the plane
-* test support
-* color contrast
-* tighten arrows
+point click - use same as line?
+feedback 
+partial scoring
+color contrast
