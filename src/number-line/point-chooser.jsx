@@ -1,8 +1,6 @@
 import React, { PropTypes as PT } from 'react';
 import concat from 'lodash/concat';
 
-
-//<path d="M0 0h24v24H0z" fill="none" />
 let DeleteIcon = (props) => {
   return <svg
     className="delete-icon"
@@ -16,38 +14,11 @@ let DeleteIcon = (props) => {
   </svg>
 };
 
-function PointFilter(props) {
-
-  let l = (label) => {
-    let active = props.activeFilter === label.toLowerCase();
-    let key = label.toLowerCase();
-
-    let onClick = active ?
-      props.rmFilter.bind(null, key) :
-      props.setFilter.bind(null, key);
-
-    return <li
-      role="presentation"
-      className={active ? 'selected' : ''}
-      onClick={onClick}>
-      <a>{label}</a>
-    </li>;
-  }
-
-  return <ul className="point-groupings">
-    {l('Point')}
-    {l('Line')}
-    {l('Ray')}
-  </ul>;
-}
-
 function Points(props) {
 
   let icon = (key, active) => {
 
-    let onClick = active ?
-      props.deselectPoint.bind(null) :
-      props.selectPoint.bind(null, key);
+    let onClick = active ? () => {} : props.selectPoint.bind(null, key);
 
     let className = `element-${key} ${active ? 'active' : ''}`;
     return <span
@@ -72,53 +43,27 @@ function Points(props) {
 export default class PointChooser extends React.Component {
   constructor(props, context) {
     super(props, context);
-
-    this.point = ['pf', 'pe'];
-    this.line = ['lff', 'lef', 'lfe', 'lee'];
-    this.ray = ['rfn', 'rfp', 'ren', 'rep'];
-    this.allIcons = concat(this.point, this.line, this.ray)
-    this.state = {
-      activeFilter: null,
-      icons: this.allIcons,
-      selectedPoint: this.point[0]
-    }
-
-  }
-
-  setFilter(p) {
-    this.setState({ activeFilter: p, icons: this[p] });
-  }
-
-  rmFilter(p) {
-    this.setState({ activeFilter: null, icons: this.allIcons });
   }
 
   selectType(p) {
     this.props.onElementType(p);
   }
 
-  deselectType(p) {
-    //do nothing we always want a type selected
-  }
-
   render() {
-
-    let maybeDeleteIcon = this.props.showDeleteButton ? <span
-      onClick={this.props.onDeleteClick} >
-      <DeleteIcon />
-    </span> : null;
+     let {
+       elementType, 
+       showDeleteButton, 
+       onDeleteClick, 
+       icons} = this.props;
 
     return <div className="point-chooser">
-      <PointFilter
-        activeFilter={this.state.activeFilter}
-        setFilter={this.setFilter.bind(this)}
-        rmFilter={this.rmFilter.bind(this)} />
       <Points
-        selected={this.props.elementType}
+        selected={elementType}
         selectPoint={this.selectType.bind(this)}
-        deselectPoint={this.deselectType.bind(this)}
-        icons={this.state.icons} />
-      {maybeDeleteIcon}
+        icons={icons} />
+      { showDeleteButton && 
+        <span onClick={onDeleteClick}><DeleteIcon/></span>
+        }
     </div>;
   }
 }
@@ -127,12 +72,14 @@ PointChooser.DEFAULT_TYPE = 'pf';
 
 PointChooser.defaultProps = {
   showDeleteButton: false,
-  elementType: PointChooser.DEFAULT_TYPE
+  elementType: PointChooser.DEFAULT_TYPE,
+  icons: ['pf', 'pe', 'lff', 'lef', 'lfe', 'lee', 'rfn', 'rfp', 'ren', 'rep']
 }
 
 PointChooser.propTypes = {
   elementType: PT.string,
   showDeleteButton: PT.bool,
   onDeleteClick: PT.func.isRequired,
-  onElementType: PT.func.isRequired
+  onElementType: PT.func.isRequired,
+  icons: PT.array
 }

@@ -4,14 +4,20 @@ import Graph from './graph';
 import { getInterval } from './graph/tick-utils';
 import cloneDeep from 'lodash/cloneDeep';
 import { buildElementModel } from './graph/elements/builder';
+import Toggle from 'corespring-correct-answer-toggle'; 
+import isArray from 'lodash/isArray';
 
 export default class NumberLine extends React.Component {
 
   constructor(props, context) {
     super(props, context);
+
+    let initialType = props.model.config ? props.model.config.initialType : null;
+    initialType = initialType ? initialType.toLowerCase() : PointChooser.DEFAULT_TYPE;
+
     this.state = {
       selectedElements: [],
-      elementType: PointChooser.DEFAULT_TYPE
+      elementType: initialType
     }
   }
 
@@ -23,15 +29,6 @@ export default class NumberLine extends React.Component {
       selected = this.state.selectedElements.filter(e => e !== index);
     }
     this.setState({ selectedElements: selected });
-  }
-
-  deselectElements() {
-    this.setState({ selectedElements: [] });
-  }
-
-  moveDot(d, position) {
-    d.position = position;
-    this.setState({});
   }
 
   elementTypeSelected(t) {
@@ -64,9 +61,16 @@ export default class NumberLine extends React.Component {
     }
   }
 
+  deselectElements() {
+    this.setState({selectedElements: []});
+  }
+
   render() {
 
-    let disabled = this.props.model.disabled;
+    let { model, answer } = this.props;
+    let { selectedElements, showCorrectAnswer } = this.state;
+
+    let disabled = model.disabled;
 
     let addElement = this.addElement.bind(this);
 
@@ -85,28 +89,61 @@ export default class NumberLine extends React.Component {
       height: 400
     }
 
-    let elements = this.props.session.answer.map((e, index) => {
-      //clone the object so that we can add properties to it internally
-      let out = cloneDeep(e);
-      out.selected = this.state.selectedElements.indexOf(index) !== -1;
-      return out;
-    });
+    let corrected = model.corrected || { correct: [], incorrect: [] };
+
+    let getAnswerElements = () => {
+      return (answer || []).map((e, index) => {
+        let out = cloneDeep(e);
+        out.selected = this.state.selectedElements.indexOf(index) !== -1;
+        out.correct = corrected.correct.includes(index) ? true : (corrected.incorrect.includes(index) ? false : undefined);
+        return out;
+      });
+    }
+
+    let getCorrectAnswerElements = () => {
+        return (model.correctResponse || []).map( r => {
+          r.correct = true;
+          return r;
+        });
+    }    
+
+    let elements = showCorrectAnswer ? 
+      getCorrectAnswerElements() : 
+      getAnswerElements();
 
     let deleteElements = () => {
       this.props.onDeleteElements(this.state.selectedElements);
       this.setState({ selectedElements: [] });
     }
 
+    let getIcons = () => {
+      if(model.config.availableTypes) {
+        return Object.keys(model.config.availableTypes)
+        .filter(k => model.config.availableTypes[k] )
+        .map(k => k.toLowerCase())
+      }  
+    }
+
+    let onShowCorrectAnswer = (show) => {
+      this.setState({showCorrectAnswer: show})
+    }
+    
     return <div className="view-number-line">
       <div className="interactive-graph">
-        {JSON.stringify(disabled)}
-        <PointChooser
-          elementType={this.state.elementType}
-          showDeleteButton={dotsSelected}
-          onDeleteClick={deleteElements}
-          onElementType={this.elementTypeSelected.bind(this)}
-        />
-        <hr />
+        <Toggle
+          show={isArray(model.correctResponse)}
+          toggled={showCorrectAnswer}
+          onToggle={onShowCorrectAnswer}
+          initialValue={false} />
+          {!disabled && 
+            <PointChooser
+              elementType={this.state.elementType}
+              showDeleteButton={dotsSelected}
+              onDeleteClick={deleteElements}
+              onElementType={this.elementTypeSelected.bind(this)}
+              icons={getIcons()}
+            />
+          }
         <Graph
           {...graphProps}
           elements={elements}
@@ -114,7 +151,7 @@ export default class NumberLine extends React.Component {
           onMoveElement={this.props.onMoveElement}
           onToggleElement={this.toggleElement.bind(this)}
           onDeselectElements={this.deselectElements.bind(this)}
-          debug={true} />
+          debug={false} />
       </div>
     </div>
   }
@@ -122,5 +159,6 @@ export default class NumberLine extends React.Component {
 
 NumberLine.propTypes = {
   onMoveElement: PT.func.isRequired,
-  onDeleteElements: PT.func.isRequired
+  onDeleteElements: PT.func.isRequired,
+  onAddElement: PT.func.isRequired
 }

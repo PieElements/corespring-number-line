@@ -1,6 +1,5 @@
 import React, { PropTypes as PT } from 'react';
 import Draggable from '../../draggable';
-import times from 'lodash/times';
 import { scaleLinear } from 'd3-scale';
 import { select, mouse } from 'd3-selection';
 import Point from './elements/point';
@@ -22,16 +21,6 @@ const getXScale = (min, max, width, padding) => {
     .domain([min, max])
     .range([padding, width - padding]);
 };
-
-
-let Debug = (props) => {
-  return <div>
-    <h3>dots</h3>
-    {JSON.stringify(props.dots, null, '  ')}
-    <h3>state</h3>
-    {JSON.stringify(props.state, null, ' ')}
-  </div>;
-}
 
 export default class NumberLineGraph extends React.Component {
 
@@ -62,8 +51,6 @@ export default class NumberLineGraph extends React.Component {
    * Saves us having to calculate them ourselves from a MouseEvent.
    */
   onRectClick(rect) {
-
-
     let { elements, disabled } = this.props;
 
     if (disabled) {
@@ -71,6 +58,7 @@ export default class NumberLineGraph extends React.Component {
     }
 
     let anyElementSelected = elements.some(e => e.selected);
+    
     if (anyElementSelected) {
       this.props.onDeselectElements();
     } else {
@@ -107,7 +95,6 @@ export default class NumberLineGraph extends React.Component {
 
     const xScale = this.xScaleFn();
 
-
     if (domain.max <= domain.min) {
       return <div>{domain.max} is less than or equal to {domain.min}</div>
     } else {
@@ -139,7 +126,6 @@ export default class NumberLineGraph extends React.Component {
         let moveElement = onMoveElement.bind(null, index, el);
 
         if (el.type === 'line') {
-          // let position = { left: el.domainPosition, right: el.domainPosition + el.size }
           let empty = { left: el.leftPoint === 'empty', right: el.rightPoint === 'empty' };
 
           return <Line
@@ -148,8 +134,7 @@ export default class NumberLineGraph extends React.Component {
             onMoveLine={moveElement}
             onToggleSelect={toggleElement}
             position={el.position}
-            empty={empty}
-            xScale={xScale} />
+            empty={empty} />
         } else if (el.type === 'point') {
 
           let bounds = {
@@ -179,10 +164,6 @@ export default class NumberLineGraph extends React.Component {
         }
       });
 
-      let debug = this.props.debug ? <Debug
-        dots={this.props.dots || []}
-        state={this.state} /> : <span></span>;
-
       return <div>
         <svg
           width={width}
@@ -199,9 +180,7 @@ export default class NumberLineGraph extends React.Component {
             y={lineY}
             domain={domain}
             ticks={ticks}
-            interval={interval}
-            xScale={xScale} />
-          {/* The click layer is above the drawn elements */}
+            interval={interval} />
           <rect
             ref={rect => this.rect = rect}
             //need to have a fill for it to be clickable
@@ -211,7 +190,6 @@ export default class NumberLineGraph extends React.Component {
             height={height}></rect>
           {elements}
         </svg>
-        {debug}
       </div>;
     }
   }

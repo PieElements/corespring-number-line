@@ -5,26 +5,34 @@ import cloneDeep from 'lodash/cloneDeep';
 let getCorrected = (answer, correctResponse) => {
 
   let matches = (a) => {
-    return (v) => isEqual(a, v);
+    return (v) => {
+      return isEqual(a, v);
+    }
   }
 
-  return answer.reduce((acc, a) => {
+  return answer.reduce((acc, a, index) => {
 
-    let match = find(correctResponse, matches(a));
+    let { correct, incorrect, notInAnswer } = acc;
+
+    let match = find(notInAnswer, matches(a));
 
     if (match) {
-      correctResponse.splice(correctResponse.indexOf(match), 1);
-      a.correct = true;
+      correct.push(index);
+      notInAnswer.splice(notInAnswer.indexOf(match), 1);
     } else {
-      a.correct = false;
+      incorrect.push(index);
     }
 
     return {
-      elements: acc.elements.concat([a]),
-      correctResponse: correctResponse
+      correct: correct,
+      incorrect: incorrect,
+      notInAnswer: notInAnswer
     }
-
-  }, { elements: [], correctResponse: correctResponse });
+  }, {
+      correct: [],
+      incorrect: [],
+      notInAnswer: correctResponse
+    });
 }
 
 export function model(question, session, env) {
@@ -32,21 +40,23 @@ export function model(question, session, env) {
   if (!question) {
     return Promise.reject(new Error('question is null'));
   }
-  console.log('question', question);
+
   return new Promise((resolve, reject) => {
     let { model } = question;
     if (model.config) {
 
       let correctResponse = cloneDeep(question.correctResponse);
-      let corrected = getCorrected(session ? session.answer || [] : [], question.correctResponse);
-      console.log('corrected:', corrected);
+      let corrected = env.mode === 'evaluate' ?
+        getCorrected(session ? session.answer || [] : [], correctResponse) :
+        null;
 
-      let disabled = env.mode !== 'gather';
+      let exhibitOnly = question.model.config ? question.model.config.exhibitOnly : null;
+      let disabled = env.mode !== 'gather' || exhibitOnly === true;
       resolve({
         config: model.config,
         disabled,
-        elements: corrected.elements,
-        missingResponses: []
+        corrected: corrected,
+        correctResponse: env.mode  === 'evaluate' ? question.correctResponse : null 
       });
     }
     else {

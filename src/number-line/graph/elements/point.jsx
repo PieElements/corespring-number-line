@@ -8,10 +8,9 @@ export default class Point extends React.Component {
 
   render() {
 
-    let { onDragStart,
-      onDragStop,
-      onClick,
-      onMove,
+    let { 
+      onDragStop, onDrag : onDragCallback,
+      onClick, onMove,
       interval,
       y,
       bounds,
@@ -52,8 +51,8 @@ export default class Point extends React.Component {
 
     let onDrag = (e, dd) => {
       let p = dragPosition(dd.x);
-      if (this.props.onDrag) {
-        this.props.onDrag(p);
+      if (onDragCallback) {
+        onDragCallback(p);
       }
     }
 
@@ -68,13 +67,12 @@ export default class Point extends React.Component {
     return <Draggable
       disabled={disabled}
       onMouseDown={onMouseDown}
-      onStart={onDragStart}
+      onStart={this.props.onDragStart}
       onDrag={onDrag}
       onStop={onStop}
       axis="x"
       grid={[is]}
       bounds={scaledBounds}>
-      {/*fill={empty ? 'white' : 'black'}*/}
       <circle
         r="5"
         strokeWidth="3"
@@ -96,8 +94,6 @@ Point.defaultProps = {
 Point.propTypes = {
   interval: PT.number.isRequired,
   position: PT.number.isRequired,
-  onDragStop: PT.func.isRequired,
-  onDragStart: PT.func.isRequired,
   bounds: PT.shape({
     left: PT.number.isRequired,
     right: PT.number.isRequired
@@ -107,8 +103,11 @@ Point.propTypes = {
   correct: PT.bool,
   empty: PT.bool,
   y: PT.number,
-  onClick: PT.func.isRequired,
-  onMove: PT.func.isRequired
+  onMove: PT.func.isRequired,
+  onClick: PT.func,
+  onDrag: PT.func,
+  onDragStop: PT.func,
+  onDragStart: PT.func
 }
 
 Point.contextTypes = {

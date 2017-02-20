@@ -2,8 +2,13 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import NumberLine from './number-line';
 import cloneDeep from 'lodash/cloneDeep';
+import { toSessionFormat, toGraphFormat } from './data-converter';
 
 require('./index.less');
+
+const NOT_SUPPORTED = [ 
+  'model.config.tickLabelOverrides'
+];
 
 export default class CorespringNumberLine extends HTMLElement {
 
@@ -19,7 +24,7 @@ export default class CorespringNumberLine extends HTMLElement {
   set session(s) {
     this._session = s;
     if (s) {
-      this._session.answer = this._session.answer || [];
+      this._session.answer = s.answer || [];
     }
     this._render();
   }
@@ -34,7 +39,7 @@ export default class CorespringNumberLine extends HTMLElement {
       return;
     }
     this._session.answer = this._session.answer || [];
-    this._session.answer.push(data);
+    this._session.answer.push(toSessionFormat(data));
     this._render();
   }
 
@@ -46,18 +51,22 @@ export default class CorespringNumberLine extends HTMLElement {
       throw new Error('cant find element at index: ', index);
     }
 
+    let graphAnswer = toGraphFormat(answer);
+
     if (el.type === 'line' && position.left === position.right) {
       this._render();
       return;
     }
 
     if (el.type === 'line' && position.left > position.right && el.leftPoint !== el.rightPoint) {
-      let old = cloneDeep(answer);
-      answer.leftPoint = old.rightPoint;
-      answer.rightPoint = old.leftPoint;
+      let old = cloneDeep(graphAnswer);
+      graphAnswer.leftPoint = old.rightPoint;
+      graphAnswer.rightPoint = old.leftPoint;
     }
 
-    answer.position = position;
+    graphAnswer.position = position;
+
+    this._session.answer.splice(index, 1, toSessionFormat(graphAnswer));
 
     this._render();
   }
@@ -72,13 +81,18 @@ export default class CorespringNumberLine extends HTMLElement {
   _render() {
     try {
       if (this._model && this._session) {
+        let answer = (this._session.answer || []).map(toGraphFormat);
+        let model = cloneDeep(this._model);
+        model.correctResponse = model.correctResponse ? model.correctResponse.map(toGraphFormat) : null;
+
+
         let props = {
-          model: this._model,
-          session: this._session,
+          model, answer,
           onAddElement: this.addElement.bind(this),
           onMoveElement: this.moveElement.bind(this),
           onDeleteElements: this.deleteElements.bind(this)
         };
+
         let el = React.createElement(NumberLine, props)
         ReactDOM.render(el, this);
       }

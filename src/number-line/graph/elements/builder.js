@@ -25,38 +25,3 @@ export function buildElementModel(position, elementType, domain, interval) {
     }
   }
 }
-
-// class Point {
-//   static build(data) {
-//     let { position, full } = data;
-//     return new Point(position, full)
-//   }
-//   constructor(position, full) {
-//     this.position = position;
-//     this.full = full;
-//   }
-// }
-
-// class Ray {
-//   static build(data) {
-//     let { position, full, direction } = data;
-//     return new Ray(position, full, direction);
-//   }
-//   constructor(position, full, direction) {
-//     this.position = position;
-//     this.full = full;
-//     this.direction = direction;
-//   }
-// }
-
-// class Line {
-//   static build(data) {
-//     let { position, fill } = data;
-//     return new Line(position, fill);
-//   }
-
-//   constructor(position, fill) {
-//     this.position = position;
-//     this.fill = fill;
-//   }
-// }

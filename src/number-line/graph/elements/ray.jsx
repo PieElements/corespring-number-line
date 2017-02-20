@@ -6,6 +6,7 @@ import isEqual from 'lodash/isEqual';
 import { basePropTypes } from './base';
 import extend from 'lodash/extend';
 import Arrow from '../arrow';
+import classNames from 'classnames';
 
 require('./ray.less');
 
@@ -39,7 +40,8 @@ export default class Ray extends React.Component {
       y,
       selected,
       disabled,
-      width
+      width,
+      correct
     } = this.props;
 
     let { xScale } = this.context;
@@ -50,7 +52,13 @@ export default class Ray extends React.Component {
     let is = xScale(interval) - xScale(0);
     let finalPosition = isNumber(this.state.dragPosition) ? this.state.dragPosition : position;
 
-    let className = 'ray' + (selected ? ' selected' : '');
+    let className = classNames('ray', {
+      selected,
+      correct: correct === true,
+      incorrect: correct === false
+    });
+
+    
     let positive = direction === 'positive';
     let left = positive ? finalPosition : domain.min;
     let right = positive ? domain.max : finalPosition;
@@ -62,15 +70,18 @@ export default class Ray extends React.Component {
     let x2 = positive ? (width - 8) : xScale(right);
     let arrowX = positive ? width : 0;
     let arrowDirection = positive ? 'right' : 'left';
+    
+    let noop = () => {}
 
     return <g className={className} transform={`translate(0, ${y})`}>
       <line
-        onClick={this.props.onToggleSelect}
+        onClick={disabled ? noop : this.props.onToggleSelect}
         className="line-handle"
         x1={x1} x2={x2}
       ></line>
       <Point
         disabled={disabled}
+        correct={correct}
         selected={selected}
         empty={empty}
         interval={interval}

@@ -49,7 +49,6 @@ export class Tick extends React.Component {
     }
 
     let xText = Number((label).toFixed(2));
-    // let color = this.props.major ? 'red' : 'black';
     let height = major ? 20 : 10;
 
     return <g className="tick"
@@ -91,7 +90,9 @@ export default class Ticks extends React.Component {
   }
 
   render() {
-    let { domain, ticks, interval, xScale, y } = this.props;
+    let { domain, ticks, interval, y } = this.props;
+    let { xScale } = this.context;
+
     let tickModel = buildTickModel(domain, ticks, interval, xScale);
     let nodes = tickModel.map(({ major, value, x }) => {
       return <Tick
@@ -107,6 +108,11 @@ export default class Ticks extends React.Component {
   }
 }
 
+
+Ticks.contextTypes = {
+  xScale: PT.func.isRequired
+}
+
 Ticks.propTypes = {
   domain: PT.shape({
     min: PT.number.isRequired,
@@ -114,6 +120,5 @@ Ticks.propTypes = {
   }).isRequired,
   ticks: TickValidator,
   interval: PT.number.isRequired,
-  y: PT.number.isRequired,
-  xScale: PT.func.isRequired
+  y: PT.number.isRequired
 }
