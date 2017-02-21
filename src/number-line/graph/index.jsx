@@ -10,7 +10,7 @@ import Arrow from './arrow';
 import Ticks, { TickValidator } from './ticks';
 import { getInterval, snapTo } from './tick-utils';
 import Stacks from './stacks';
-
+import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 const getXScale = (min, max, width, padding) => {
 
   if (min === undefined || max === undefined || width === undefined) {
@@ -58,7 +58,7 @@ export default class NumberLineGraph extends React.Component {
     }
 
     let anyElementSelected = elements.some(e => e.selected);
-    
+
     if (anyElementSelected) {
       this.props.onDeselectElements();
     } else {
@@ -116,7 +116,7 @@ export default class NumberLineGraph extends React.Component {
         let commonProps = {
           key: index,
           y,
-          selected: el.selected,
+          selected: el.selected && !disabled,
           interval,
           disabled,
           correct: el.correct
@@ -188,7 +188,15 @@ export default class NumberLineGraph extends React.Component {
             fillOpacity="0.0"
             width={width}
             height={height}></rect>
-          {elements}
+          <ReactCSSTransitionGroup
+            transitionName="el"
+            component="g"
+            transitionAppear={true}
+            transitionAppearTimeout={200}
+            transitionEnterTimeout={200}
+            transitionLeaveTimeout={200}>
+            {elements}
+          </ReactCSSTransitionGroup>
         </svg>
       </div>;
     }

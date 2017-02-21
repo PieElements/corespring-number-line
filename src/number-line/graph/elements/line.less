@@ -1,3 +1,5 @@
+@duration: 150ms;
+
 .line {
   &.selected{
     .line-handle{
@@ -12,7 +14,9 @@
     stroke: black;
     cursor: pointer;
     stroke-width: 5px;
-    transition: opacity 150ms linear, stroke-width 200ms linear;
+    transition: opacity @duration linear, 
+      stroke-width @duration linear,
+      stroke @duration linear;
   }  
 
   &.correct {
@@ -31,7 +35,7 @@
 
   &.react-draggable-dragging {
 
-    opacity: 0.25;
+    opacity: 0.6;
     .line-handle{
       opacity: 1.0;
       stroke-width: 12px;

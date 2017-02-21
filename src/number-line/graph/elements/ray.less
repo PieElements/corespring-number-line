@@ -1,43 +1,39 @@
+.ray-color(@color){
+  line {
+    stroke: @color;
+  }
+  .arrow {
+    fill: @color;
+    stroke-width: 1px;
+    stroke: @color;
+  }
+}
+
 .ray {
+  line {
+    cursor: pointer;
+  }
 
-
+  line, .arrow{
+    transition: stroke 150ms linear, fill 150ms linear;
+  }
+  
    &.correct{
-     line {
-       stroke: green;
-     }
-     .arrow {
-       fill: green;
-       stroke-width: 1px;
-       stroke: green;
-     }
+     .ray-color(green);
    }
 
    &.incorrect{
-     line {
-       stroke: orange;
-     }
-     .arrow {
-       fill: orange;
-       stroke-width: 1px;
-       stroke: orange;
-     }
+     .ray-color(orange);
    }
 
    &.selected{
-    .arrow{
-        fill:#aaaaff;
-    }
-    line {
-      stroke:#aaaaff;
-    }
-    circle{
-      stroke:#aaaaff;
-    }
+     .ray-color(#aaaaff);
   }
 
   .arrow{
     fill: black;
   }
+
   line{
     stroke-width: 5px;
     stroke: black;

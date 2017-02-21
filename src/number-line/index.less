@@ -1,3 +1,23 @@
+@duration: 150ms;
+
+.el-enter {
+  opacity: 0.01;
+}
+
+
+.el-enter.el-enter-active {
+  opacity: 1;
+  transition: opacity @duration ease-in;
+}
+
+.el-leave {
+  opacity: 1;
+}
+
+.el-leave.el-leave-active {
+  opacity: 0.01;
+  transition: opacity @duration ease-in;
+}
 
 .view-number-line {
   padding: 10px;
@@ -10,17 +30,63 @@
   &.white_on_black {
     background-color: black;
 
-     line{
-       stroke: white;
+    .label{
+      color: white;
+    }
+    
+    line{
+      stroke: white;
+    }
+    .line {
+      &.correct {
+        .line-handle{
+          stroke: lightgreen;
+        }
+      }
+    } 
+    .ray{
+      .line-handle{
+        stroke: white;
+      } 
+      
+      &.selected {
+        .line-handle{
+          stroke:#aaaaff;
+        } 
+        .arrow{
+          fill: #aaaaff;
+        }
+      }
+
+      &.incorrect{
+        line {
+          stroke: orange;
+        }
+        .arrow{
+          fill: orange;
+          stroke: orange;
+        }
+      }
      }
-     
+
      .point{
        fill: white;
        stroke: white;
-     }
-
-     .point.empty{
-       fill: black;
+       &.selected{
+        stroke:#aaaaff;
+        fill:#aaaaff;
+       }
+       &.incorrect{
+         stroke: orange;
+         fill: orange;
+       } 
+       &.correct{
+         stroke: lightgreen;
+         fill: lightgreen;
+       } 
+       &.empty{
+         fill: black;
+       }
      }
      
      path.arrow{
