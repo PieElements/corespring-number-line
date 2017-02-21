@@ -1,6 +1,8 @@
 import React, { PropTypes as PT } from 'react';
 import { buildTickModel } from './tick-utils';
 
+require('./ticks.less');
+
 export const TickValidator = PT.shape({
   /** the number of major ticks (including min + max) 
    * to display. cant be lower than 2.
@@ -55,7 +57,6 @@ export class Tick extends React.Component {
       opacity="1"
       transform={`translate(${x}, ${y})`}>
       <line
-        stroke={'black'}
         y1={(height / 2) * -1}
         y2={height / 2}
         x1="0.5"
@@ -63,7 +64,6 @@ export class Tick extends React.Component {
       {major &&
         <text ref={text => this.text = text}
           style={style}
-          fill="#000"
           y="14"
           width="10"
           dy="0.71em">{xText}</text>

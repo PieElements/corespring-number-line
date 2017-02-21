@@ -9,6 +9,8 @@ import isArray from 'lodash/isArray';
 import isNumber from 'lodash/isNumber';
 import Feedback from './feedback';
 
+require('./index.less');
+
 export default class NumberLine extends React.Component {
 
   constructor(props, context) {
@@ -157,7 +159,7 @@ export default class NumberLine extends React.Component {
 
     let feedbackWidth = graphProps.width - 20;
 
-    return <div className="view-number-line">
+    return <div className={`view-number-line ${model.colorContrast || ''}`}>
       <div className="interactive-graph">
         <div className="toggle-holder" style={{ width: feedbackWidth }}>
           <Toggle
