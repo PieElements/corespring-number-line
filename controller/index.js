@@ -1,6 +1,52 @@
 import isEqual from 'lodash/isEqual';
 import find from 'lodash/find';
 import cloneDeep from 'lodash/cloneDeep';
+import isEmpty from 'lodash/isEmpty';
+
+let score = (number) => {
+  return {
+    score: {
+      scaled: number
+    }
+  }
+}
+
+let getPartialScore = (corrected, ps) => {
+  let [rule] = ps;
+
+  if (corrected.correct.length === rule.numberOfCorrect) {
+    return 1.0 * (rule.scorePercentage / 100);
+  } else {
+    return 0;
+  }
+}
+
+export function outcome(question, session) {
+  session.answer = session.answer || [];
+
+  return new Promise((resolve, reject) => {
+
+    let corrected = getCorrected(session.answer, cloneDeep(question.correctResponse));
+    let correctness = getCorrectness(corrected);
+
+    if (correctness === 'correct') {
+      resolve(score(1.0));
+    } else if (correctness === 'incorrect') {
+      resolve(score(0.0));
+    } else if (correctness === 'partial') {
+      let { allowPartialScoring, partialScoring } = question;
+      let ps = partialScoring.filter(o => !isEmpty(o));
+      let canDoPartialScoring = allowPartialScoring && ps.length > 0;
+      if (canDoPartialScoring) {
+        resolve(score(getPartialScore(corrected, ps)))
+      } else {
+        resolve(score(0.0));
+      }
+    } else {
+      resolve({ score: { scaled: -1 } });
+    }
+  });
+}
 
 let getCorrected = (answer, correctResponse) => {
 
@@ -129,8 +175,4 @@ export function model(question, session, env) {
       reject(new Error('config is undefined'));
     }
   });
-}
-
-export function outcome() {
-  return Promise.resolve({});
 }

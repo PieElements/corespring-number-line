@@ -14,6 +14,13 @@
           "type": "point",
           "pointType": "full",
           "domainPosition": 1
+        },
+        {
+          "type": "line",
+          "leftPoint": "full",
+          "rightPoint": "empty",
+          "domainPosition": 1,
+          "size": 2
         }
       ],
       "feedback": {
@@ -22,9 +29,12 @@
         "incorrectFeedbackType": "custom",
         "incorrectFeedback": "<h1>incorrect</h1>"
       },
-      "allowPartialScoring": false,
+      "allowPartialScoring": true,
       "partialScoring": [
-        {}
+        {
+          "numberOfCorrect": 1,
+          "scorePercentage": 35
+        }
       ],
       "model": {
         "config": {
