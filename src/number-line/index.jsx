@@ -6,6 +6,7 @@ import cloneDeep from 'lodash/cloneDeep';
 import { buildElementModel } from './graph/elements/builder';
 import Toggle from 'corespring-correct-answer-toggle';
 import isArray from 'lodash/isArray';
+import isNumber from 'lodash/isNumber';
 import Feedback from './feedback';
 
 export default class NumberLine extends React.Component {
@@ -54,12 +55,30 @@ export default class NumberLine extends React.Component {
   }
 
   addElement(x) {
+
+    if (this.hasMaxNoOfPoints()) {
+      this.setState({ showMaxPointsWarning: true });
+      setTimeout(() => {
+        this.setState({ showMaxPointsWarning: false })
+      }, 2000);
+      return;
+    }
+
     let domain = this.getDomain();
     let interval = getInterval(domain, this.getTicks());
     let elementData = buildElementModel(x, this.state.elementType, domain, interval);
+
     if (elementData) {
       this.props.onAddElement(elementData);
     }
+  }
+
+  hasMaxNoOfPoints() {
+    let { answer, model: { config: { maxNumberOfPoints } } } = this.props
+
+    return isNumber(maxNumberOfPoints) &&
+      maxNumberOfPoints > 0 &&
+      (answer || []).length >= maxNumberOfPoints;
   }
 
   componentWillReceiveProps() {
@@ -74,6 +93,7 @@ export default class NumberLine extends React.Component {
 
     let { model, answer } = this.props;
     let { selectedElements, showCorrectAnswer } = this.state;
+
 
     let disabled = model.disabled;
 
@@ -116,6 +136,8 @@ export default class NumberLine extends React.Component {
       getCorrectAnswerElements() :
       getAnswerElements();
 
+    let maxPointsMessage = `You can only add ${model.config.maxNumberOfPoints} elements`;
+
     let deleteElements = () => {
       this.props.onDeleteElements(this.state.selectedElements);
       this.setState({ selectedElements: [] });
@@ -133,15 +155,17 @@ export default class NumberLine extends React.Component {
       this.setState({ showCorrectAnswer: show })
     }
 
-    let emptyAnswer = model.emptyAnswer;
+    let feedbackWidth = graphProps.width - 20;
 
     return <div className="view-number-line">
       <div className="interactive-graph">
-        <Toggle
-          show={isArray(model.correctResponse) && !emptyAnswer}
-          toggled={showCorrectAnswer}
-          onToggle={onShowCorrectAnswer}
-          initialValue={false} />
+        <div className="toggle-holder" style={{ width: feedbackWidth }}>
+          <Toggle
+            show={isArray(model.correctResponse) && !model.emptyAnswer}
+            toggled={showCorrectAnswer}
+            onToggle={onShowCorrectAnswer}
+            initialValue={false} />
+        </div>
         {!disabled &&
           <PointChooser
             elementType={this.state.elementType}
@@ -159,11 +183,14 @@ export default class NumberLine extends React.Component {
           onToggleElement={this.toggleElement.bind(this)}
           onDeselectElements={this.deselectElements.bind(this)}
           debug={false} />
+        {this.state.showMaxPointsWarning &&
+          <Feedback type="info"
+            width={feedbackWidth}
+            message={maxPointsMessage} />}
         {model.feedback &&
           <Feedback
             {...model.feedback}
-            width={graphProps.width - 20}
-          />}
+            width={feedbackWidth} />}
       </div>
     </div>
   }

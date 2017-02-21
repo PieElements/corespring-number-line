@@ -37,6 +37,7 @@ export default class CorespringNumberLine extends HTMLElement {
     if (!this._session) {
       return;
     }
+
     this._session.answer = this._session.answer || [];
     this._session.answer.push(toSessionFormat(data));
     this._render();

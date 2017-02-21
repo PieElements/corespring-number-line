@@ -2,6 +2,7 @@ import React from 'react';
 import NothingSubmittedIcon from 'corespring-icon/nothing-submitted-icon';
 import CorrectIcon from 'corespring-icon/correct-icon';
 import PartiallyCorrectIcon from 'corespring-icon/partially-correct-icon';
+import ShowRationaleIcon from 'corespring-icon/show-rationale-icon';
 import IncorrectIcon from 'corespring-icon/incorrect-icon';
 import classNames from 'classnames';
 
@@ -13,6 +14,7 @@ let getIcon = (t) => {
     case 'correct': return CorrectIcon;
     case 'incorrect': return IncorrectIcon;
     case 'partial': return PartiallyCorrectIcon;
+    case 'info': return ShowRationaleIcon;
     default:
       return undefined;
   }

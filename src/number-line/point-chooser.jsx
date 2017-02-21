@@ -1,6 +1,8 @@
 import React, { PropTypes as PT } from 'react';
 import concat from 'lodash/concat';
 
+require('./point-chooser.less');
+
 let DeleteIcon = (props) => {
   return <svg
     className="delete-icon"
@@ -18,7 +20,7 @@ function Points(props) {
 
   let icon = (key, active) => {
 
-    let onClick = active ? () => {} : props.selectPoint.bind(null, key);
+    let onClick = active ? () => { } : props.selectPoint.bind(null, key);
 
     let className = `element-${key} ${active ? 'active' : ''}`;
     return <span
@@ -50,20 +52,20 @@ export default class PointChooser extends React.Component {
   }
 
   render() {
-     let {
-       elementType, 
-       showDeleteButton, 
-       onDeleteClick, 
-       icons} = this.props;
+    let {
+       elementType,
+      showDeleteButton,
+      onDeleteClick,
+      icons } = this.props;
 
     return <div className="point-chooser">
       <Points
         selected={elementType}
         selectPoint={this.selectType.bind(this)}
         icons={icons} />
-      { showDeleteButton && 
-        <span onClick={onDeleteClick}><DeleteIcon/></span>
-        }
+      {showDeleteButton &&
+        <span className="delete-icon-holder" onClick={onDeleteClick}><DeleteIcon /></span>
+      }
     </div>;
   }
 }
