@@ -17,9 +17,10 @@
         }
       ],
       "feedback": {
-        "correctFeedbackType": "none",
-        "partialFeedbackType": "none",
-        "incorrectFeedbackType": "none"
+        "correctFeedbackType": "default",
+        "partialFeedbackType": "default",
+        "incorrectFeedbackType": "custom",
+        "incorrectFeedback": "<h1>incorrect</h1>"
       },
       "allowPartialScoring": false,
       "partialScoring": [

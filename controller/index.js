@@ -43,6 +43,7 @@ const DEFAULT_FEEDBACK = {
 }
 
 let getFeedback = (correctness, feedback) => {
+
   let message = (key, defaultFeedback) => {
     let type = feedback[`${key}Type`];
     if (type === 'none') {
@@ -54,17 +55,28 @@ let getFeedback = (correctness, feedback) => {
     }
   }
 
+  if (correctness === 'unanswered') {
+    return {
+      type: correctness,
+      message: 'You have not entered a response'
+    }
+  }
+
   let key = `${correctness}Feedback`;
 
-  let msg = message(key, DEFAULT_FEEDBACK[key]);
+  let msg = message(key, DEFAULT_FEEDBACK[correctness]);
 
-  if (message) {
-    return { type: correctness, message: message };
+  if (msg) {
+    return { type: correctness, message: msg };
   }
 }
 
 let getCorrectness = (corrected) => {
   let { incorrect, correct, notInAnswer } = corrected;
+
+  if (incorrect.length === 0 && correct.length === 0) {
+    return 'unanswered';
+  }
 
   if (incorrect.length === 0 && notInAnswer.length === 0) {
     return 'correct';
@@ -95,23 +107,23 @@ export function model(question, session, env) {
       let evaluateMode = env.mode === 'evaluate';
 
       let correctResponse = cloneDeep(question.correctResponse);
-      let corrected = evaluateMode ?
-        getCorrected(session ? session.answer || [] : [], correctResponse) :
-        null;
+      let corrected = evaluateMode && getCorrected(session ? session.answer || [] : [], correctResponse);
+      let correctness = evaluateMode && getCorrectness(corrected);
 
       let exhibitOnly = question.model.config ? question.model.config.exhibitOnly : null;
       let disabled = env.mode !== 'gather' || exhibitOnly === true;
 
-      let correctness = getCorrectness(corrected);
       let feedback = evaluateMode && getFeedback(correctness, question.feedback);
 
-      resolve({
+      let out = {
         config: model.config,
         disabled,
-        corrected: corrected,
-        correctResponse: evaluateMode ? question.correctResponse : null,
+        corrected,
+        correctResponse: evaluateMode && ['unanswered', 'correct'].indexOf(correctness) === -1 && question.correctResponse,
         feedback
-      });
+      };
+
+      resolve(out);
     }
     else {
       reject(new Error('config is undefined'));

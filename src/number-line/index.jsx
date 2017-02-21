@@ -6,7 +6,7 @@ import cloneDeep from 'lodash/cloneDeep';
 import { buildElementModel } from './graph/elements/builder';
 import Toggle from 'corespring-correct-answer-toggle';
 import isArray from 'lodash/isArray';
-import { NoResponse } from './feedback';
+import Feedback from './feedback';
 
 export default class NumberLine extends React.Component {
 
@@ -155,11 +155,11 @@ export default class NumberLine extends React.Component {
           onToggleElement={this.toggleElement.bind(this)}
           onDeselectElements={this.deselectElements.bind(this)}
           debug={false} />
-        {emptyAnswer &&
-          <NoResponse
+        {model.feedback &&
+          <Feedback
+            {...model.feedback}
             width={graphProps.width - 20}
-            message={'You did not enter a response'} />
-        }
+          />}
       </div>
     </div>
   }
