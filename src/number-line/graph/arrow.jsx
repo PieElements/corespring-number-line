@@ -16,7 +16,6 @@ export default function Arrow(props) {
     className="arrow" />
 }
 
-
 Arrow.propTypes = {
   y: PT.number,
   x: PT.number,

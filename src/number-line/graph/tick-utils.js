@@ -21,7 +21,6 @@ export function getInterval(domain, ticks) {
     throw new Error('Tick Frequency must be 2 or higher');
   }
 
-  // let majorInterval = parseFloat(Number(distance / normalizedMajor).toFixed(4));
   let divider = normalizedMajor * minorTicks;
   let raw = distance / divider;
   return parseFloat(Number(raw).toFixed(4));
@@ -29,7 +28,7 @@ export function getInterval(domain, ticks) {
 
 let mkRange = (min, max, interval) => {
   let raw = range(min, max, interval);
-  //Fix the last step due to rounding errors
+  /* Fix the last step due to rounding errors */
   raw.splice(raw.length, 1, max)
   return raw;
 }
@@ -39,10 +38,10 @@ export function snapTo(min, max, interval, value) {
   if (value >= max) {
     return max;
   }
+
   if (value <= min) {
     return min;
   }
-
 
   let rng = mkRange(min, max, interval);
 
@@ -60,7 +59,6 @@ export function snapTo(min, max, interval, value) {
 }
 
 export function buildTickModel(domain, ticks, interval, scaleFn) {
-
 
   let rng = mkRange(domain.min, domain.max, interval);
 

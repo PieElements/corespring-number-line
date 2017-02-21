@@ -72,7 +72,6 @@ export default class CorespringNumberLine extends HTMLElement {
     this._render();
   }
 
-
   _applyInitialElements() {
     if (this._model &&
       this._model.config &&

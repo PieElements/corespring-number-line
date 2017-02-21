@@ -1,7 +1,7 @@
 import React, { PropTypes as PT } from 'react';
 import Point from './point';
 import isNumber from 'lodash/isNumber';
-import Draggable, { getDragPosition } from '../../../draggable';
+import Draggable from '../../../draggable';
 import isEqual from 'lodash/isEqual';
 import { basePropTypes } from './base';
 import extend from 'lodash/extend';
@@ -58,7 +58,7 @@ export default class Ray extends React.Component {
       incorrect: correct === false
     });
 
-    
+
     let positive = direction === 'positive';
     let left = positive ? finalPosition : domain.min;
     let right = positive ? domain.max : finalPosition;
@@ -70,8 +70,8 @@ export default class Ray extends React.Component {
     let x2 = positive ? (width - 8) : xScale(right);
     let arrowX = positive ? width : 0;
     let arrowDirection = positive ? 'right' : 'left';
-    
-    let noop = () => {}
+
+    let noop = () => { }
 
     return <g className={className} transform={`translate(0, ${y})`}>
       <line

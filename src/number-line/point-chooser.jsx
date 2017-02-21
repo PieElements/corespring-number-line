@@ -1,5 +1,5 @@
 import React, { PropTypes as PT } from 'react';
-import concat from 'lodash/concat';
+import classNames from 'classnames';
 
 require('./point-chooser.less');
 
@@ -21,14 +21,15 @@ function Points(props) {
   let icon = (key, active) => {
 
     let onClick = active ? () => { } : props.selectPoint.bind(null, key);
+    let className = classNames(`element-${key}`, { active });
 
-    let className = `element-${key} ${active ? 'active' : ''}`;
     return <span
       role="presentation"
       key={key}
       className={className}
-      onClick={onClick}
-    ><a className={active ? 'active' : ''}>&nbsp;</a></span>
+      onClick={onClick} >
+      <a className={active ? 'active' : ''}>&nbsp;</a>
+    </span>
   }
 
   let iconTags = props.icons.map(key => {
@@ -53,7 +54,7 @@ export default class PointChooser extends React.Component {
 
   render() {
     let {
-       elementType,
+      elementType,
       showDeleteButton,
       onDeleteClick,
       icons } = this.props;

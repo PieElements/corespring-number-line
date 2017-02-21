@@ -95,16 +95,11 @@ export default class NumberLine extends React.Component {
 
     let { model, answer } = this.props;
     let { selectedElements, showCorrectAnswer } = this.state;
-
-
-    let disabled = model.disabled;
-
+    let { corrected, disabled } = model;
     let addElement = this.addElement.bind(this);
-
-    let dotsSelected = !disabled && this.state.selectedElements && this.state.selectedElements.length > 0;
+    let elementsSelected = !disabled && this.state.selectedElements && this.state.selectedElements.length > 0;
 
     let domain = this.getDomain();
-
     let ticks = this.getTicks();
 
     let graphProps = {
@@ -115,8 +110,6 @@ export default class NumberLine extends React.Component {
       width: 600,
       height: 400
     }
-
-    let corrected = model.corrected || { correct: [], incorrect: [] };
 
     let getAnswerElements = () => {
       return (answer || []).map((e, index) => {
@@ -138,7 +131,7 @@ export default class NumberLine extends React.Component {
       getCorrectAnswerElements() :
       getAnswerElements();
 
-    let maxPointsMessage = `You can only add ${model.config.maxNumberOfPoints} elements`;
+    let maxPointsMessage = () => `You can only add ${model.config.maxNumberOfPoints} elements`;
 
     let deleteElements = () => {
       this.props.onDeleteElements(this.state.selectedElements);
@@ -149,7 +142,7 @@ export default class NumberLine extends React.Component {
       if (model.config.availableTypes) {
         return Object.keys(model.config.availableTypes)
           .filter(k => model.config.availableTypes[k])
-          .map(k => k.toLowerCase())
+          .map(k => k.toLowerCase());
       }
     }
 
@@ -157,11 +150,11 @@ export default class NumberLine extends React.Component {
       this.setState({ showCorrectAnswer: show })
     }
 
-    let feedbackWidth = graphProps.width - 20;
+    let adjustedWidth = graphProps.width - 20;
 
     return <div className={`view-number-line ${model.colorContrast || ''}`}>
       <div className="interactive-graph">
-        <div className="toggle-holder" style={{ width: feedbackWidth }}>
+        <div className="toggle-holder" style={{ width: adjustedWidth }}>
           <Toggle
             show={isArray(model.correctResponse) && !model.emptyAnswer}
             toggled={showCorrectAnswer}
@@ -171,7 +164,7 @@ export default class NumberLine extends React.Component {
         {!disabled &&
           <PointChooser
             elementType={this.state.elementType}
-            showDeleteButton={dotsSelected}
+            showDeleteButton={elementsSelected}
             onDeleteClick={deleteElements}
             onElementType={this.elementTypeSelected.bind(this)}
             icons={getIcons()}
@@ -187,12 +180,12 @@ export default class NumberLine extends React.Component {
           debug={false} />
         {this.state.showMaxPointsWarning &&
           <Feedback type="info"
-            width={feedbackWidth}
-            message={maxPointsMessage} />}
+            width={adjustedWidth}
+            message={maxPointsMessage()} />}
         {model.feedback &&
           <Feedback
             {...model.feedback}
-            width={feedbackWidth} />}
+            width={adjustedWidth} />}
       </div>
     </div>
   }

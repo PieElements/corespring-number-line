@@ -1,7 +1,7 @@
 import React, { PropTypes as PT } from 'react';
 import Point from './point';
 import isNumber from 'lodash/isNumber';
-import Draggable, { getDragPosition } from '../../../draggable';
+import Draggable from '../../../draggable';
 import isEqual from 'lodash/isEqual';
 import extend from 'lodash/extend';
 import { basePropTypes } from './base';

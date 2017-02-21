@@ -1,5 +1,5 @@
 import React, { PropTypes as PT } from 'react';
-import Draggable, { getDragPosition } from '../../../draggable';
+import Draggable from '../../../draggable';
 import classNames from 'classnames';
 
 require('./point.less');

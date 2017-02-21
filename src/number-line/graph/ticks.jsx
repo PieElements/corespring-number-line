@@ -100,14 +100,12 @@ export default class Ticks extends React.Component {
         key={value}
         label={value}
         y={y}
-        x={x}
-      />
+        x={x} />
     });
 
     return <g>{nodes}</g>;
   }
 }
-
 
 Ticks.contextTypes = {
   xScale: PT.func.isRequired
