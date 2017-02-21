@@ -35,6 +35,53 @@ let getCorrected = (answer, correctResponse) => {
     });
 }
 
+
+const DEFAULT_FEEDBACK = {
+  correct: 'Correct!',
+  incorrect: 'Good try but that is not the correct answer.',
+  partial: 'Almost!'
+}
+
+let getFeedback = (correctness, feedback) => {
+  let message = (key, defaultFeedback) => {
+    let type = feedback[`${key}Type`];
+    if (type === 'none') {
+      return null;
+    } else if (type === 'default') {
+      return defaultFeedback;
+    } else if (type === 'custom') {
+      return feedback[key];
+    }
+  }
+
+  let key = `${correctness}Feedback`;
+
+  let msg = message(key, DEFAULT_FEEDBACK[key]);
+
+  if (message) {
+    return { type: correctness, message: message };
+  }
+}
+
+let getCorrectness = (corrected) => {
+  let { incorrect, correct, notInAnswer } = corrected;
+
+  if (incorrect.length === 0 && notInAnswer.length === 0) {
+    return 'correct';
+  }
+
+  if (incorrect.length > 0 || notInAnswer.length > 0) {
+    if (correct.length > 0) {
+      return 'partial';
+    } else {
+      return 'incorrect';
+    }
+  }
+
+  return 'unknown';
+}
+
+
 export function model(question, session, env) {
 
   if (!question) {
@@ -54,12 +101,16 @@ export function model(question, session, env) {
 
       let exhibitOnly = question.model.config ? question.model.config.exhibitOnly : null;
       let disabled = env.mode !== 'gather' || exhibitOnly === true;
+
+      let correctness = getCorrectness(corrected);
+      let feedback = evaluateMode && getFeedback(correctness, question.feedback);
+
       resolve({
         config: model.config,
         disabled,
         corrected: corrected,
         correctResponse: evaluateMode ? question.correctResponse : null,
-        emptyAnswer: evaluateMode && (!session.answer || session.answer.length === 0)
+        feedback
       });
     }
     else {
