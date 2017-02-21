@@ -16,6 +16,7 @@
     "d3-selection": "^1.0.3",
     "lodash": "^4.17.4",
     "react": "^15.4.2",
+    "react-addons-css-transition-group": "^15.4.2",
     "react-dom": "^15.4.2",
     "react-draggable": "corespring/react-draggable#feature/fix-bound-drag"
   },
