@@ -162,12 +162,14 @@ export function model(question, session, env) {
 
       let feedback = evaluateMode && getFeedback(correctness, question.feedback);
 
+      console.log('colorContrast', env.accessibility && env.accessibility.colorContrast);
       let out = {
         config: model.config,
         disabled,
         corrected,
         correctResponse: evaluateMode && ['unanswered', 'correct'].indexOf(correctness) === -1 && question.correctResponse,
-        feedback
+        feedback,
+        colorContrast: env.accessibility && env.accessibility.colorContrast || 'black_on_white'
       };
 
       resolve(out);
