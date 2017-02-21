@@ -4,12 +4,6 @@ import NumberLine from './number-line';
 import cloneDeep from 'lodash/cloneDeep';
 import { toSessionFormat, toGraphFormat } from './data-converter';
 
-require('./index.less');
-
-const NOT_SUPPORTED = [
-  'model.config.tickLabelOverrides'
-];
-
 export default class CorespringNumberLine extends HTMLElement {
 
   constructor() {
