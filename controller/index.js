@@ -12,9 +12,10 @@ let score = (number) => {
 }
 
 let getPartialScore = (corrected, ps) => {
-  let [rule] = ps;
+  let { correct } = corrected;
+  let rule = ps.find(r => r.numberOfCorrect === correct.length);
 
-  if (corrected.correct.length === rule.numberOfCorrect) {
+  if (rule) {
     return 1.0 * (rule.scorePercentage / 100);
   } else {
     return 0;
