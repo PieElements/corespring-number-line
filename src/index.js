@@ -6,7 +6,7 @@ import { toSessionFormat, toGraphFormat } from './data-converter';
 
 require('./index.less');
 
-const NOT_SUPPORTED = [ 
+const NOT_SUPPORTED = [
   'model.config.tickLabelOverrides'
 ];
 
@@ -18,14 +18,13 @@ export default class CorespringNumberLine extends HTMLElement {
 
   set model(m) {
     this._model = m;
+    this._applyInitialElements();
     this._render();
   }
 
   set session(s) {
     this._session = s;
-    if (s) {
-      this._session.answer = s.answer || [];
-    }
+    this._applyInitialElements();
     this._render();
   }
 
@@ -78,12 +77,21 @@ export default class CorespringNumberLine extends HTMLElement {
     this._render();
   }
 
+
+  _applyInitialElements() {
+    if (this._model &&
+      this._model.config &&
+      this._model.config.initialElements && this._session && !this._session.answer) {
+      this._session.answer = cloneDeep(this._model.config.initialElements);
+    }
+  }
+
   _render() {
     try {
       if (this._model && this._session) {
         let answer = (this._session.answer || []).map(toGraphFormat);
         let model = cloneDeep(this._model);
-        model.correctResponse = model.correctResponse ? model.correctResponse.map(toGraphFormat) : null;
+        model.correctResponse = model.correctResponse && model.correctResponse.map(toGraphFormat);
 
 
         let props = {

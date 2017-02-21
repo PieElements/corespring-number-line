@@ -62,6 +62,10 @@ export default class NumberLine extends React.Component {
     }
   }
 
+  componentWillReceiveProps() {
+    this.setState({ showCorrectAnswer: false });
+  }
+
   deselectElements() {
     this.setState({ selectedElements: [] });
   }

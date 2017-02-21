@@ -32,6 +32,13 @@
             -5,
             5
           ],
+          "initialElements": [
+            {
+              "type": "point",
+              "pointType": "empty",
+              "domainPosition": -1
+            }
+          ],
           "maxNumberOfPoints": 20,
           "tickFrequency": 11,
           "showMinorTicks": true,
