@@ -1,0 +1,41 @@
+
+.view-number-line {
+  padding: 10px;
+  svg {
+    .no-cursor {
+      cursor: auto;
+    }
+  }
+  
+  &.white_on_black {
+    background-color: black;
+
+     line{
+       stroke: white;
+     }
+     
+     .point{
+       fill: white;
+       stroke: white;
+     }
+
+     .point.empty{
+       fill: black;
+     }
+     
+     path.arrow{
+       fill: white;
+     } 
+
+    .tick{
+      line{
+        stroke: white;
+      }
+
+      text{
+        fill: white;
+      }
+    }
+  }
+}
+
