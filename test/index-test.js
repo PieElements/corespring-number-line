@@ -1,11 +1,10 @@
-const proxyquire = require('proxyquire');
-const { expect } = require('chai');
-const { stub, assert } = require('sinon');
+import { stub, assert, match } from 'sinon';
+import { expect } from 'chai';
+import proxyquire from 'proxyquire';
 
 describe('number-line', () => {
 
-  let el, instance;
-
+  let mod, deps, instance;
 
   let point = {
     session: (n) => ({
@@ -21,7 +20,7 @@ describe('number-line', () => {
   }
 
   let getStubInstance = () => {
-    let out = new el.default();
+    let out = new mod.default();
     out._render = stub();
     out._applyInitialElements = stub();
     return out;
@@ -32,17 +31,22 @@ describe('number-line', () => {
     let numberLine = stub();
     numberLine['@noCallThru'] = true;
 
-    el = proxyquire('../src/index', {
-      'react': {},
-      'react-dom': {},
+    deps = {
+      'react': {
+        createElement: stub()
+      },
+      'react-dom': {
+        render: stub()
+      },
       './number-line': numberLine,
       './data-converter': {}
-    });
+    };
+    mod = proxyquire('../src/index', deps);
   });
 
   describe('constructor', () => {
     it('inits', () => {
-      instance = new el.default();
+      instance = new mod.default();
       expect(instance).not.to.be.null;
     });
   });
@@ -135,5 +139,23 @@ describe('number-line', () => {
     })
   });
 
+  describe('_render', () => {
+    beforeEach(() => {
+      instance = new mod.default();
+      instance.model = {};
+      instance.session = { answer: [] };
+      instance._render();
+    });
+
+    it('calls createElement', () => {
+      assert.calledWith(deps.react.createElement, deps['./number-line'], {
+        model: { correctResponse: undefined },
+        answer: [],
+        onAddElement: match.func,
+        onMoveElement: match.func,
+        onDeleteElements: match.func
+      });
+    });
+  });
 });
 

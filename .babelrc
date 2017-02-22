@@ -1,4 +1,8 @@
 {
+  "sourceMaps": "inline",
+  "presets": [
+    "airbnb"
+  ],
   "plugins": [
     "transform-es2015-modules-commonjs"
   ]
