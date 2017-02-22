@@ -8,7 +8,6 @@ export const switchGraphLine = (line) => {
   let { position } = line;
 
   if (position.left < position.right) {
-    console.log('return line...');
     return line;
   }
 

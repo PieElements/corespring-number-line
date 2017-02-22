@@ -4,6 +4,15 @@ const { stub, match, assert, spy } = require('sinon');
 const proxyquire = require('proxyquire');
 chai.use(require('chai-shallow-deep-equal'));
 
+let tick = (isMajor, v) => ({
+  major: isMajor,
+  value: v,
+  x: v
+});
+
+let major = tick.bind(null, true);
+let minor = tick.bind(null, false);
+
 describe('ticks', () => {
 
   let mod;
@@ -12,34 +21,47 @@ describe('ticks', () => {
     mod = require('../../src/number-line/graph/tick-utils');
   });
 
-  let assertTicks = (min, max, input, expected) => {
-    let paramsDescription = JSON.stringify(input);
-    input = Object.assign(input, { min: min, max: max });
-    it(`converts: ${paramsDescription} to ${JSON.stringify(expected)}`, () => {
-      let result = mod.convertFrequencyToInterval(input, input.tickFrequency, input.betweenTickCount);
-      expect(result).to.shallowDeepEqual(expected);
-    });
-  }
 
   describe('buildTickModel', () => {
 
-    let scaleFn = spy(function (v) {
-      return v;
+    let scaleFn;
+
+    beforeEach(() => {
+      scaleFn = spy(function (v) {
+        return v;
+      });
     });
 
-    it('??', () => {
-      let result = mod.buildTickModel({ min: 0, max: 4 }, { interval: 0.66, steps: 2 }, scaleFn)
-      expect(result).to.eql([]);
+    it('builds major only ticks', () => {
+      let result = mod.buildTickModel({ min: 0, max: 2 }, { minor: 0 }, 1, scaleFn)
+      expect(result).to.eql([
+        major(0),
+        major(1),
+        major(2),
+      ]);
     });
+
+    it('builds minor + major ticks', () => {
+      let result = mod.buildTickModel({ min: 0, max: 2 }, { minor: 1 }, 0.5, scaleFn)
+      expect(result).to.eql([
+        major(0),
+        minor(0.5),
+        major(1),
+        minor(1.5),
+        major(2),
+      ]);
+    });
+
   });
 
-  describe.only('snapTo', () => {
+  describe('snapTo', () => {
     let assertSnapTo = (min, max, interval, value, expected) => {
       it(`snaps ${value} to ${expected} with domain ${min}<->${max} with interval: ${interval} `, () => {
         let result = mod.snapTo(min, max, interval, value);
         expect(result).to.eql(expected);
       });
     }
+
     describe('with 0, 10, 0.25', () => {
       let a = assertSnapTo.bind(null, 0, 10, 0.25);
       a(1, 1);
@@ -63,7 +85,15 @@ describe('ticks', () => {
     });
   });
 
-  describe('convertFrequencyToInterval', () => {
+  describe('getInterval', () => {
+
+    let assertGetInterval = (min, max, ticks, expected) => {
+      let paramsDescription = JSON.stringify(ticks);
+      it(`converts: ${paramsDescription} to ${JSON.stringify(expected)}`, () => {
+        let result = mod.getInterval({ min: min, max: max }, ticks);
+        expect(result).to.shallowDeepEqual(expected);
+      });
+    }
 
     describe('with bad params', () => {
       it('throws an error if min > max', () => {
@@ -80,13 +110,15 @@ describe('ticks', () => {
         }).to.throw(Error);
       });
     });
+
     describe('with domain 0 -> 1', () => {
-      let a = assertTicks.bind(null, 0, 1);
-      a({ tickFrequency: 11, betweenTickCount: 9 }, { interval: 0.01, major: 0.1 });
+      let a = assertGetInterval.bind(null, 0, 1);
+      a({ major: 2, minor: 0 }, 1);
+      a({ major: 2, minor: 1 }, 0.5);
     });
 
     describe('with domain 0 -> 10', () => {
-      let a = assertTicks.bind(null, 0, 10);
+      let a = assertGetInterval.bind(null, 0, 10);
 
 
       it('throws an error if the tick frequency is less than 2', () => {
@@ -96,38 +128,38 @@ describe('ticks', () => {
         }).to.throw(Error);
       });
 
-      a({ tickFrequency: 2, betweenTickCount: 9 }, { interval: 1, major: 10, counts: { interval: 10, major: 1 } });
-      a({ tickFrequency: 2, betweenTickCount: 0 }, { interval: 10, major: 10 });
-      a({ tickFrequency: 3, betweenTickCount: 0 }, { interval: 5, major: 5 });
-      a({ tickFrequency: 3, betweenTickCount: 1 }, { interval: 2.5, major: 5 });
-      a({ tickFrequency: 4, betweenTickCount: 0 }, { interval: 3.33, major: 3.33 });
-      a({ tickFrequency: 5, betweenTickCount: 0 }, { interval: 2.5, major: 2.5 });
-      a({ tickFrequency: 6, betweenTickCount: 0 }, { interval: 2, major: 2 });
-      a({ tickFrequency: 7, betweenTickCount: 0 }, { interval: 1.67, major: 1.67 });
-      a({ tickFrequency: 8, betweenTickCount: 0 }, { interval: 1.43, major: 1.43 });
-      a({ tickFrequency: 9, betweenTickCount: 0 }, { interval: 1.25, major: 1.25 });
-      a({ tickFrequency: 10, betweenTickCount: 0 }, { interval: 1.11, major: 1.11 });
-      a({ tickFrequency: 11, betweenTickCount: 0 }, { interval: 1, major: 1 });
-      a({ tickFrequency: 11, betweenTickCount: 1 }, { interval: 0.5, major: 1 });
-      a({ tickFrequency: 11, betweenTickCount: 2 }, { interval: 0.33, major: 1 });
+      a({ major: 2, minor: 9 }, 1);
+      a({ major: 2, minor: 0 }, 10);
+      a({ major: 3, minor: 0 }, 5);
+      a({ major: 3, minor: 1 }, 2.5);
+      a({ major: 4, minor: 0 }, 3.3333);
+      a({ major: 5, minor: 0 }, 2.5);
+      a({ major: 6, minor: 0 }, 2);
+      a({ major: 7, minor: 0 }, 1.6667);
+      a({ major: 8, minor: 0 }, 1.4286);
+      a({ major: 9, minor: 0 }, 1.25);
+      a({ major: 10, minor: 0 }, 1.1111);
+      a({ major: 11, minor: 0 }, 1);
+      a({ major: 11, minor: 1 }, 0.5);
+      a({ major: 11, minor: 2 }, 0.3333);
     });
 
     describe('with domain 0 -> 100', () => {
-      let a = assertTicks.bind(null, 0, 100);
-      a({ tickFrequency: 11, betweenTickCount: 1 }, { interval: 5, major: 10 });
-      a({ tickFrequency: 101, betweenTickCount: 0 }, { interval: 1, major: 1 });
+      let a = assertGetInterval.bind(null, 0, 100);
+      a({ major: 11, minor: 1 }, 5);
+      a({ major: 101, minor: 0 }, 1);
     });
 
     describe('with domain -5 - 5', () => {
-      let a = assertTicks.bind(null, -5, 5);
-      a({ tickFrequency: 11, betweenTickCount: 0 }, { interval: 1, major: 1 });
+      let a = assertGetInterval.bind(null, -5, 5);
+      a({ major: 11, minor: 0 }, 1);
     });
 
     describe('with domain 0 - 5', () => {
-      let a = assertTicks.bind(null, 0, 5);
-      a({ min: 0, max: 5, tickFrequency: 11, betweenTickCount: 0 }, { interval: 0.5, major: 0.5 });
-      a({ min: 0, max: 5, tickFrequency: 11, betweenTickCount: 2 }, { interval: 0.17, major: 0.5 });
-      a({ min: 0, max: 5, tickFrequency: 11, betweenTickCount: 1 }, { interval: 0.25, major: 0.5 });
+      let a = assertGetInterval.bind(null, 0, 5);
+      a({ major: 11, minor: 0 }, 0.5);
+      a({ major: 11, minor: 2 }, 0.1667);
+      a({ major: 11, minor: 1 }, 0.25);
     });
   });
 });

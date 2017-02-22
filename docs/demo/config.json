@@ -39,7 +39,7 @@
       "model": {
         "config": {
           "domain": [
-            -5,
+            0,
             5
           ],
           "initialElements": [
@@ -50,7 +50,7 @@
             }
           ],
           "maxNumberOfPoints": 20,
-          "tickFrequency": 11,
+          "tickFrequency": 6,
           "showMinorTicks": true,
           "snapPerTick": 1,
           "tickLabelOverrides": [],

@@ -64,11 +64,11 @@ export function buildTickModel(domain, ticks, interval, scaleFn) {
 
   return rng.map((r, index) => {
 
-    let major = (index % (ticks.minor + 1)) === 0;
+    let isMajor = (index % (ticks.minor + 1)) === 0;
+
     return {
-      index: index,
       value: r,
-      major: major,
+      major: isMajor,
       x: scaleFn(r)
     }
   });
