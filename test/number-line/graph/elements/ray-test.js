@@ -4,13 +4,11 @@ import { stub, spy } from 'sinon';
 import { expect } from 'chai';
 import proxyquire from 'proxyquire';
 import _ from 'lodash';
+import { assertProp, stubContext } from './utils';
 
 describe('ray', () => {
-  let Ray, Point, deps, wrapper;
+  let Ray, Point, Arrow, deps, wrapper;
 
-  let assertProp = (getEl, name, expected) => {
-    it(`sets ${name} to ${expected}`, () => expect(getEl().prop(name)).to.eql(expected));
-  }
 
   let mkWrapper = (props, context) => {
 
@@ -31,16 +29,7 @@ describe('ray', () => {
     }
 
     props = _.merge(defaults, props);
-
-    let opts = _.merge({
-      context: {
-        xScale: spy(function (n) {
-          return n;
-        }),
-        snapValue: stub()
-      }
-    }, { context: context });
-
+    let opts = _.merge({ context: stubContext }, { context: context });
     return shallow(<Ray {...props} />, opts);
   }
 
@@ -50,10 +39,13 @@ describe('ray', () => {
     less['@noCallThru'] = true;
     Point = stub()
     Point['@noCallThru'] = true;
+    Arrow = stub();
+    Arrow['@noCallThru'] = true;
 
     deps = {
       './ray.less': less,
-      './point': Point
+      './point': Point,
+      '../arrow': Arrow
     };
 
     Ray = proxyquire('../../../../src/number-line/graph/elements/ray', deps).default;
@@ -95,7 +87,12 @@ describe('ray', () => {
 
     assertProp(() => mkWrapper({ selected: true }).find('g'), 'className', 'ray selected incorrect');
     assertProp(() => mkWrapper({ selected: true, correct: true }).find('g'), 'className', 'ray selected correct');
-  })
+  });
+
+  describe('Arrow.arrowDirection', () => {
+    assertProp(() => mkWrapper().find(Arrow), 'direction', 'right');
+    assertProp(() => mkWrapper({ direction: 'negative' }).find(Arrow), 'direction', 'left');
+  });
 
   describe('drag', () => {
 
