@@ -95,7 +95,7 @@ export default class NumberLine extends React.Component {
 
     let { model, answer } = this.props;
     let { selectedElements, showCorrectAnswer } = this.state;
-    let { corrected, disabled } = model;
+    let { corrected = { correct: [], incorrect: [] }, disabled } = model;
     let addElement = this.addElement.bind(this);
     let elementsSelected = !disabled && this.state.selectedElements && this.state.selectedElements.length > 0;
 

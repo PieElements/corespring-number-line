@@ -125,7 +125,7 @@ export default class Line extends React.Component {
         <g transform={`translate(0, ${y})`}>
           <rect
             x={xScale(left)}
-            width={xScale(right) - xScale(left)}
+            width={Math.abs(xScale(right) - xScale(left))}
             fill="red"
             fillOpacity="0.0"
             y="-8"

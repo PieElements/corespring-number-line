@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import NumberLine from './number-line';
 import cloneDeep from 'lodash/cloneDeep';
-import { toSessionFormat, toGraphFormat } from './data-converter';
+import { toSessionFormat, toGraphFormat, lineIsSwitched, switchGraphLine } from './data-converter';
 
 export default class CorespringNumberLine extends HTMLElement {
 
@@ -45,22 +45,19 @@ export default class CorespringNumberLine extends HTMLElement {
       throw new Error('cant find element at index: ', index);
     }
 
-    let graphAnswer = toGraphFormat(answer);
 
     if (el.type === 'line' && position.left === position.right) {
       this._render();
       return;
     }
 
-    if (el.type === 'line' && position.left > position.right && el.leftPoint !== el.rightPoint) {
-      let old = cloneDeep(graphAnswer);
-      graphAnswer.leftPoint = old.rightPoint;
-      graphAnswer.rightPoint = old.leftPoint;
-    }
+    //set the new position
+    el.position = position;
 
-    graphAnswer.position = position;
+    let update = (el.type === 'line' && lineIsSwitched(el)) ?
+      switchGraphLine(el) : el;
 
-    this._session.answer.splice(index, 1, toSessionFormat(graphAnswer));
+    this._session.answer.splice(index, 1, toSessionFormat(update));
 
     this._render();
   }

@@ -2,6 +2,7 @@ import isEqual from 'lodash/isEqual';
 import find from 'lodash/find';
 import cloneDeep from 'lodash/cloneDeep';
 import isEmpty from 'lodash/isEmpty';
+import omitBy from 'lodash/omitBy';
 
 let score = (number) => {
   return {
@@ -172,7 +173,7 @@ export function model(question, session, env) {
         colorContrast: env.accessibility && env.accessibility.colorContrast || 'black_on_white'
       };
 
-      resolve(out);
+      resolve(omitBy(out, v => !v));
     }
     else {
       reject(new Error('config is undefined'));

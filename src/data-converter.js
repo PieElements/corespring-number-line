@@ -1,3 +1,32 @@
+export const lineIsSwitched = (line) => {
+  let { position } = line;
+  return position.left > position.right;
+}
+
+export const switchGraphLine = (line) => {
+
+  let { position } = line;
+
+  if (position.left < position.right) {
+    console.log('return line...');
+    return line;
+  }
+
+  let { leftPoint: newRightPoint, rightPoint: newLeftPoint } = line;
+
+  return {
+    leftPoint: newLeftPoint,
+    rightPoint: newRightPoint,
+    position: switchPosition(position),
+    type: 'line'
+  }
+}
+
+export const switchPosition = (p) => {
+  let { left: newRight, right: newLeft } = p;
+  return { left: newLeft, right: newRight };
+}
+
 export const toSessionFormat = (gf) => {
   if (gf.type === 'point') {
     return {
