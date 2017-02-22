@@ -6,6 +6,9 @@
   "dependencies": {
     "lodash": "^4.17.4"
   },
+  "devDependencies": {
+    "chai-shallow-deep-equal": "^1.4.4"
+  },
   "scripts": {
     "test": "../node_modules/.bin/mocha --require babel-register test/**"
   },
