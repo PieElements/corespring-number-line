@@ -4,7 +4,7 @@
 
 ![demo](./demo.gif)
 
-A [pie](https://www.npmjs.com/package/pie) interaction for to allow interaction with a number line.
+A [pie](https://www.npmjs.com/package/pie) interaction that renders an interactive number line.
 
 ## Demo 
 
