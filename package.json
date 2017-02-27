@@ -1,6 +1,6 @@
 {
   "name": "corespring-number-line",
-  "version": "0.1.0-prerelease",
+  "version": "0.2.0-prerelease",
   "description": "A number line interaction for pie",
   "main": "src/index.js",
   "scripts": {
