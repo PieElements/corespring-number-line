@@ -30,15 +30,16 @@
     "chai-shallow-deep-equal": "^1.4.4",
     "css-loader": "^0.26.1",
     "enzyme": "^2.7.1",
+    "gulp": "^3.9.1",
     "less": "^2.7.2",
     "less-loader": "^2.2.3",
     "mocha": "^3.2.0",
     "proxyquire": "^1.7.11",
     "react-addons-test-utils": "^15.4.2",
+    "release-helper": "github:pielabs/release-helper#v1.3.0",
     "sinon": "^1.17.7",
     "style-loader": "^0.13.1",
     "webpack": "^2.2.1",
-    "webpack-dev-server": "^2.3.0",
-    "release-helper": "github:pielabs/release-helper#v1.3.0"
+    "webpack-dev-server": "^2.3.0"
   }
 }
