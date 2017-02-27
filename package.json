@@ -1,7 +1,7 @@
 {
   "name": "corespring-number-line",
-  "version": "1.0.0",
-  "description": "",
+  "version": "0.1.0-prerelease",
+  "description": "A number line interaction for pie",
   "main": "src/index.js",
   "scripts": {
     "test": "./node_modules/.bin/mocha --require babel-register --recursive test && cd controller && npm test"
