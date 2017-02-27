@@ -84,16 +84,18 @@ let getCorrected = (answer, correctResponse) => {
 }
 
 
-const DEFAULT_FEEDBACK = {
+export const DEFAULT_FEEDBACK = {
   correct: 'Correct!',
   incorrect: 'Good try but that is not the correct answer.',
-  partial: 'Almost!'
+  partial: 'Almost!',
+  unanswered: 'You have not entered a response'
 }
 
 let getFeedback = (correctness, feedback) => {
 
   let message = (key, defaultFeedback) => {
-    let type = feedback[`${key}Type`];
+    let type = feedback ? feedback[`${key}Type`] : 'default';
+
     if (type === 'none') {
       return null;
     } else if (type === 'default') {
@@ -105,8 +107,8 @@ let getFeedback = (correctness, feedback) => {
 
   if (correctness === 'unanswered') {
     return {
-      type: correctness,
-      message: 'You have not entered a response'
+      type: 'unanswered',
+      message: DEFAULT_FEEDBACK.unanswered
     }
   }
 
@@ -163,7 +165,6 @@ export function model(question, session, env) {
 
       let feedback = evaluateMode && getFeedback(correctness, question.feedback);
 
-      console.log('colorContrast', env.accessibility && env.accessibility.colorContrast);
       let out = {
         config: model.config,
         disabled,
