@@ -1,0 +1,244 @@
+{
+  "title": "CoreSpring Number Line Question Schema",
+  "type": "object",
+  "definitions": {
+    "feedbackType": {
+      "type": "string",
+      "enum": [
+        "default",
+        "custom"
+      ]
+    },
+    "pointType": {
+      "type": "string",
+      "enum": [
+        "full",
+        "empty"
+      ],
+      "description": "Describes whether the point is filled-in or empty."
+    },
+    "domainPosition": {
+      "type": "number",
+      "description": "The position within the domain."
+    },
+    "point": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "point"
+          ]
+        },
+        "pointType": {
+          "$ref": "#/definitions/pointType"
+        },
+        "domainPosition": {
+          "$ref": "#/definitions/domainPosition"
+        }
+      },
+      "required": [
+        "type",
+        "domainPosition",
+        "pointType"
+      ]
+    },
+    "ray": {
+      "type": "object",
+      "properties": {
+        "type": "string",
+        "type": {
+          "enum": [
+            "ray"
+          ]
+        },
+        "pointType": {
+          "$ref": "#/definitions/pointType"
+        },
+        "domainPosition": {
+          "$ref": "#/definitions/domainPosition"
+        },
+        "direction": {
+          "type": "string",
+          "enum": [
+            "positive",
+            "negative"
+          ]
+        }
+      },
+      "required": [
+        "type",
+        "pointType",
+        "direction",
+        "domainPosition"
+      ]
+    },
+    "line": {
+      "type": "object",
+      "properties": {
+        "leftPoint": {
+          "$ref": "#/definitions/pointType"
+        },
+        "rightPoint": {
+          "$ref": "#/definitions/pointType"
+        },
+        "domainPosition": {
+          "$ref": "#/definitions/domainPosition"
+        },
+        "size": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "leftPoint",
+        "rightPoint",
+        "size",
+        "domainPosition"
+      ]
+    }
+  },
+  "properties": {
+    "correctResponse": {
+      "type": "array",
+      "description": "Describes the correct response of points, rays, lines to be displayed on the number line.",
+      "items": {
+        "oneOf": [
+          {
+            "$ref": "#/definitions/ray"
+          },
+          {
+            "$ref": "#/definitions/line"
+          },
+          {
+            "$ref": "#/definitions/point"
+          }
+        ]
+      }
+    },
+    "feedback": {
+      "type": "object",
+      "properties": {
+        "correctFeedbackType": {
+          "$ref": "#/definitions/feedbackType"
+        },
+        "partialFeedbackType": {
+          "$ref": "#/definitions/feedbackType"
+        },
+        "incorrectFeedbackType": {
+          "$ref": "#/definitions/feedbackType"
+        },
+        "correctFeedback": {
+          "type": "string",
+          "description": "Feedback to render if custom is the feedbackType"
+        },
+        "partialFeedback": {
+          "type": "string",
+          "description": "Feedback to render if custom is the feedbackType"
+        },
+        "incorrectFeedback": {
+          "type": "string",
+          "description": "Feedback to render if custom is the feedbackType"
+        }
+      }
+    },
+    "allowPartialScoring": {
+      "type": "boolean",
+      "description": "allow partial scoring"
+    },
+    "partialScoring": {
+      "type": "array",
+      "description": "An array of rules describing what percentage to give for the number of correct responses",
+      "items": {
+        "type": "object",
+        "properties": {
+          "numberOfCorrect": {
+            "type": "number"
+          },
+          "scorePercentage": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "numberOfCorrect",
+          "scorePercentage"
+        ]
+      }
+    },
+    "model": {
+      "type": "object",
+      "properties": {
+        "config": {
+          "type": "object",
+          "description": "An object describing the various configuration properties of the component.",
+          "properties": {
+            "domain": {
+              "type": "array",
+              "description": "A two-number array representing the minimum and maximum values to be displayed on the number line.",
+              "minItems": 2,
+              "maxItems": 2
+            },
+            "initialType": {
+              "type": "string",
+              "description": "The initial type of point, line, or ray to be set by the component.",
+              "enum": [
+                "PF",
+                "LEE",
+                "LEF",
+                "LFE",
+                "LFF",
+                "REP",
+                "REN",
+                "RFP",
+                "RFN"
+              ]
+            },
+            "snapPerTick": {
+              "type": "number",
+              "description": "The number of positions that are clickable between two ticks."
+            },
+            "exhibitOnly": {
+              "type": "boolean",
+              "description": "If true, the interacting with the component is disabled."
+            },
+            "maxNumberOfPoints": {
+              "type": "number",
+              "description": "The number of points which may be added to the component by the user."
+            },
+            "tickFrequency": {
+              "type": "number",
+              "description": "The total number of major ticks on the number line."
+            },
+            "availableTypes": {
+              "type": "object",
+              "description": "An object mapping point, ray, and line types to boolean values which specify whether or not the types are available for use in the component."
+            },
+            "initialElements": {
+              "type": "array",
+              "description": "Describes the elements that are to be initially displayed on the number line.",
+              "items": {
+                "oneOf": [
+                  {
+                    "$ref": "#/definitions/ray"
+                  },
+                  {
+                    "$ref": "#/definitions/line"
+                  },
+                  {
+                    "$ref": "#/definitions/point"
+                  }
+                ]
+              }
+            }
+          }
+        }
+      },
+      "required": [
+        "config"
+      ]
+    }
+  },
+  "required": [
+    "correctResponse",
+    "model"
+  ]
+}
