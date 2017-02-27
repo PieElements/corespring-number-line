@@ -26,14 +26,11 @@ let getPartialScore = (corrected, ps) => {
 export function outcome(question, session) {
   session.answer = session.answer || [];
 
-  console.log('answer: ', session.answer);
   return new Promise((resolve, reject) => {
 
     let corrected = getCorrected(session.answer, cloneDeep(question.correctResponse));
     let correctness = getCorrectness(corrected);
 
-    console.log('corrected: ', corrected);
-    console.log('correctness: ', correctness);
     if (correctness === 'correct') {
       resolve(score(1.0));
     } else if (correctness === 'incorrect') {
