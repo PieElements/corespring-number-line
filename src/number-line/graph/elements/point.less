@@ -1,0 +1,44 @@
+@duration: 150ms;
+
+circle.point{
+  cursor:pointer;
+
+  // opacity: 1;
+  transition: r @duration linear,  
+    opacity @duration linear, 
+    fill @duration linear,
+    stroke @duration linear;
+
+  stroke: black;
+  fill: black;
+  &.empty{
+    fill: white;
+  }
+  
+  &.correct{
+    cursor:inherit;
+    stroke: green;
+    fill: green;
+    &.empty{
+     fill: white; 
+    }
+  }  
+
+  &.incorrect{
+    stroke: orange;
+    fill: orange;
+    &.empty{
+      fill: white;
+    }
+  }
+
+  &.selected{
+    stroke:#aaaaff;
+  }
+
+  &.react-draggable-dragging{
+    opacity: 0.25;
+    r: 10px;
+  }
+}
+

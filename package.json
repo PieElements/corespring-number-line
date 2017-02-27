@@ -1,18 +1,45 @@
 {
   "name": "corespring-number-line",
-  "version": "0.0.1",
-  "description": "",
+  "version": "0.1.0-prerelease",
+  "description": "A number line interaction for pie",
   "main": "src/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "./node_modules/.bin/mocha --require babel-register --recursive test && cd controller && npm test"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "react": "^15.4.2",
-    "react-dom": "^15.4.2",
+    "classnames": "^2.2.5",
+    "corespring-correct-answer-toggle": "^3.0.0",
+    "corespring-icon": "github:pielabs/corespring-icon",
+    "d3-scale": "^1.0.4",
+    "d3-selection": "^1.0.3",
     "lodash": "^4.17.4",
-    "raphael": "~2.2.7",
-    "d3": "^4.5.0"
+    "react": "^15.4.2",
+    "react-addons-css-transition-group": "^15.4.2",
+    "react-dom": "^15.4.2",
+    "react-draggable": "corespring/react-draggable#feature/fix-bound-drag"
+  },
+  "devDependencies": {
+    "babel-loader": "^6.3.0",
+    "babel-plugin-transform-es2015-modules-commonjs": "^6.23.0",
+    "babel-preset-airbnb": "^2.2.3",
+    "babel-preset-react": "^6.23.0",
+    "babel-register": "^6.23.0",
+    "chai": "^3.5.0",
+    "chai-shallow-deep-equal": "^1.4.4",
+    "css-loader": "^0.26.1",
+    "enzyme": "^2.7.1",
+    "gulp": "^3.9.1",
+    "less": "^2.7.2",
+    "less-loader": "^2.2.3",
+    "mocha": "^3.2.0",
+    "proxyquire": "^1.7.11",
+    "react-addons-test-utils": "^15.4.2",
+    "release-helper": "github:pielabs/release-helper#v1.3.0",
+    "sinon": "^1.17.7",
+    "style-loader": "^0.13.1",
+    "webpack": "^2.2.1",
+    "webpack-dev-server": "^2.3.0"
   }
 }

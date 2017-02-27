@@ -14,25 +14,43 @@
           "type": "point",
           "pointType": "full",
           "domainPosition": 1
+        },
+        {
+          "type": "line",
+          "leftPoint": "full",
+          "rightPoint": "empty",
+          "domainPosition": 1,
+          "size": 2
         }
       ],
       "feedback": {
-        "correctFeedbackType": "none",
-        "partialFeedbackType": "none",
-        "incorrectFeedbackType": "none"
+        "correctFeedbackType": "default",
+        "partialFeedbackType": "default",
+        "incorrectFeedbackType": "custom",
+        "incorrectFeedback": "<h1>incorrect</h1>"
       },
-      "allowPartialScoring": false,
+      "allowPartialScoring": true,
       "partialScoring": [
-        {}
+        {
+          "numberOfCorrect": 1,
+          "scorePercentage": 35
+        }
       ],
       "model": {
         "config": {
           "domain": [
-            -5,
+            0,
             5
           ],
+          "initialElements": [
+            {
+              "type": "point",
+              "pointType": "empty",
+              "domainPosition": -1
+            }
+          ],
           "maxNumberOfPoints": 20,
-          "tickFrequency": 11,
+          "tickFrequency": 6,
           "showMinorTicks": true,
           "snapPerTick": 1,
           "tickLabelOverrides": [],

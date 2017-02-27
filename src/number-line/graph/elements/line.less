@@ -1,0 +1,44 @@
+@duration: 150ms;
+
+.line {
+  &.selected{
+    .line-handle{
+      stroke:#aaaaff;
+    }
+    circle{
+      stroke:#aaaaff;
+    }
+  }
+
+  .line-handle{
+    stroke: black;
+    cursor: pointer;
+    stroke-width: 5px;
+    transition: opacity @duration linear, 
+      stroke-width @duration linear,
+      stroke @duration linear;
+  }  
+
+  &.correct {
+    .line-handle{
+      cursor: inherit;
+      stroke: green;
+    }
+  } 
+  
+  &.incorrect {
+    .line-handle{
+      cursor: inherit;
+      stroke: orange;
+    }
+  } 
+
+  &.react-draggable-dragging {
+
+    opacity: 0.6;
+    .line-handle{
+      opacity: 1.0;
+      stroke-width: 12px;
+    }
+  }
+}
