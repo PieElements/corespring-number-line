@@ -6,7 +6,11 @@
   "scripts": {
     "test": "./node_modules/.bin/mocha --require babel-register --recursive test && cd controller && npm test"
   },
-  "author": "",
+  "repository": {
+    "type": "git+ssh",
+    "url": "git@github.com:PieElements/corespring-number-line"
+  },
+  "author": "corespring",
   "license": "ISC",
   "dependencies": {
     "classnames": "^2.2.5",
