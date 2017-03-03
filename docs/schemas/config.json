@@ -46,10 +46,12 @@
     "ray": {
       "type": "object",
       "properties": {
-        "type": "string",
-        "enum": [
-          "ray"
-        ],
+        "type": {
+          "type": "string",
+          "enum": [
+            "ray"
+          ]
+        },
         "pointType": {
           "$ref": "#/definitions/pointType"
         },
