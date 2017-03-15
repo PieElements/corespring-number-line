@@ -93,7 +93,6 @@ export default class Ticks extends React.Component {
     let { domain, ticks, interval, y } = this.props;
     let { xScale } = this.context;
 
-    console.log('ticks: for: ', domain, ticks, interval);
     let tickModel = buildTickModel(domain, ticks, interval, xScale);
     let nodes = tickModel.map(({ major, value, x }) => {
       return <Tick
