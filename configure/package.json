@@ -1,0 +1,10 @@
+{
+  "name": "corespring-number-line-configure",
+  "version": "1.0.0",
+  "main": "./src/index.js",
+  "dependencies": {
+    "react": "^15.4.1",
+    "react-dom": "^15.4.1",
+    "react-tap-event-plugin": "^2.0.1"
+  }
+}
