@@ -1,22 +1,22 @@
-import React from 'react';
-
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-import getMuiTheme from 'material-ui/styles/getMuiTheme';
-import { blue500, green500, green700, grey400, grey500, red500 } from 'material-ui/styles/colors';
-import TextField from 'material-ui/TextField';
-import Checkbox from 'material-ui/Checkbox';
-import NumberLineGraph from '../../../../../../../src/number-line/graph';
-import NumberLine from '../../../../../../../src/number-line';
-import PointConfig from '../../../../../../../src/number-line/point-config';
-import { getInterval } from '../../../../../../../src/number-line/graph/tick-utils';
-import { buildElementModel } from '../../../../../../../src/number-line/graph/elements/builder';
-import { toSessionFormat, toGraphFormat, lineIsSwitched, switchGraphLine } from '../../../../../../../src/data-converter';
-import RaisedButton from 'material-ui/RaisedButton';
-import injectTapEventPlugin from 'react-tap-event-plugin';
-import cloneDeep from 'lodash/cloneDeep';
 import { Card, CardActions, CardHeader, CardText } from 'material-ui/Card';
+import { blue500, green500, green700, grey400, grey500, red500 } from 'material-ui/styles/colors';
+import { lineIsSwitched, switchGraphLine, toGraphFormat, toSessionFormat } from 'corespring-number-line/src/data-converter';
+
+import Checkbox from 'material-ui/Checkbox';
 import FeedbackConfig from 'corespring-feedback-config/src/index.jsx';
 import FeedbackSelector from 'corespring-feedback-config/src/feedback-selector.jsx';
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+import NumberLine from 'corespring-number-line/src/number-line';
+import NumberLineGraph from 'corespring-number-line/src/number-line/graph';
+import PointConfig from 'corespring-number-line/src/number-line/point-config';
+import RaisedButton from 'material-ui/RaisedButton';
+import React from 'react';
+import TextField from 'material-ui/TextField';
+import { buildElementModel } from 'corespring-number-line/src/number-line/graph/elements/builder';
+import cloneDeep from 'lodash/cloneDeep';
+import { getInterval } from 'corespring-number-line/src/number-line/graph/tick-utils';
+import getMuiTheme from 'material-ui/styles/getMuiTheme';
+import injectTapEventPlugin from 'react-tap-event-plugin';
 
 injectTapEventPlugin();
 
@@ -168,7 +168,7 @@ class Main extends React.Component {
       margin: '0 10px'
     };
 
-    let noOp = () => {};
+    let noOp = () => { };
 
     let correctResponse = cloneDeep(this.props.model.correctResponse).map(toGraphFormat);
     let initialView = cloneDeep(this.props.model.model.config.initialElements).map(toGraphFormat);
@@ -178,10 +178,10 @@ class Main extends React.Component {
         <p>In this interaction, students plot points, line segments or rays on a number line.</p>
         <h2>Number Line Attributes</h2>
         <p>
-          Set up the number line by entering the domain and number of tick marks to display. Labels on the number 
+          Set up the number line by entering the domain and number of tick marks to display. Labels on the number
           line can be edited or removed by clicking on the label.
         </p>
-        <NumberLineGraph 
+        <NumberLineGraph
           elements={[]}
           domain={this.getDomain()}
           ticks={this.getTicks()}
@@ -193,28 +193,28 @@ class Main extends React.Component {
           onToggleElement={noOp}
           onDeselectElements={noOp} />
         <div className="domain">
-          Domain = 
-          <TextField 
+          Domain =
+          <TextField
             value={this.props.model.model.config.domain[0]}
             name={domainBegin}
-            style={numberFieldStyle} 
-            onChange={this.domainChange.bind(this)} /> to 
-          <TextField 
+            style={numberFieldStyle}
+            onChange={this.domainChange.bind(this)} /> to
+          <TextField
             value={this.props.model.model.config.domain[1]}
             name={domainEnd}
             style={numberFieldStyle}
-            onChange={this.domainChange.bind(this)}/>
+            onChange={this.domainChange.bind(this)} />
         </div>
-        Number of Ticks: 
-        <TextField 
+        Number of Ticks:
+        <TextField
           value={this.props.model.model.config.tickFrequency}
           name="numberOfTicks"
           style={numberFieldStyle}
-          onChange={this.props.onTickFrequencyChange.bind(this)}/>
-        <Checkbox 
+          onChange={this.props.onTickFrequencyChange.bind(this)} />
+        <Checkbox
           checked={this.props.model.model.config.showMinorTicks}
           label="Display minor tick marks"
-          onCheck={this.props.onMinorTicksChanged.bind(this)}/>
+          onCheck={this.props.onMinorTicksChanged.bind(this)} />
         {
           this.props.model.model.config.showMinorTicks && (
             <div>
@@ -235,7 +235,7 @@ class Main extends React.Component {
             [
               <h2 key='header'>Correct Response</h2>,
               <p key='prompt'>
-                Select answer type and place it on the number line. Intersecting points, line segments and/or rays will appear above the number 
+                Select answer type and place it on the number line. Intersecting points, line segments and/or rays will appear above the number
                 line. <i>Note: A maximum of 20 points, line segments or rays may be plotted.</i>
               </p>,
               <NumberLine key='number-line'
@@ -243,13 +243,13 @@ class Main extends React.Component {
                 onDeleteElements={this.deleteCorrectResponse.bind(this)}
                 onAddElement={this.addCorrectResponse.bind(this)}
                 answer={correctResponse}
-                model={this.props.model.model}/>,
+                model={this.props.model.model} />,
               <Card key='display-card'>
-                <CardHeader title="Display" showExpandableButton={true}/>
+                <CardHeader title="Display" showExpandableButton={true} />
                 <CardText expandable={true}>
                   <p>Click on the input options to be displayed to the students. All inputs will display by default.</p>
                   <div className="point-type-chooser">
-                    <PointConfig 
+                    <PointConfig
                       onSelectionChange={this.availableTypesChange.bind(this)}
                       selection={this.props.model.model.config.availableTypes} />
                   </div>
@@ -259,7 +259,7 @@ class Main extends React.Component {
           )
         }
         <Card>
-          <CardHeader title="Initial view/Make Exhibit" showExpandableButton={true}/>
+          <CardHeader title="Initial view/Make Exhibit" showExpandableButton={true} />
           <CardText expandable={true}>
             <p>Use this number line to set a starting point, line segment or ray. This is optional.</p>
             <p>This number line may also be used to make an exhibit number line, which can not be manipulated by a student.</p>
@@ -268,8 +268,8 @@ class Main extends React.Component {
               onDeleteElements={this.deleteInitialView.bind(this)}
               onAddElement={this.addInitialView.bind(this)}
               answer={initialView}
-              model={this.props.model.model}/>
-            <Checkbox 
+              model={this.props.model.model} />
+            <Checkbox
               label="Make exhibit"
               checked={this.props.model.model.config.exhibitOnly}
               onCheck={this.exhibitChanged.bind(this)}
@@ -278,8 +278,8 @@ class Main extends React.Component {
         </Card>
         {
           !this.props.model.model.config.exhibitOnly && (
-            <FeedbackConfig 
-              feedback={this.props.model.feedback} 
+            <FeedbackConfig
+              feedback={this.props.model.feedback}
               onChange={this.props.onFeedbackChange.bind(this)}
               defaultCorrectFeedback="Correct"
               defaultPartialFeedback="Almost!"
