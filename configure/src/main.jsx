@@ -12,6 +12,7 @@ import PointConfig from 'corespring-number-line/src/number-line/point-config';
 import RaisedButton from 'material-ui/RaisedButton';
 import React from 'react';
 import TextField from 'material-ui/TextField';
+import NumberTextField from './number-text-field';
 import { buildElementModel } from 'corespring-number-line/src/number-line/graph/elements/builder';
 import cloneDeep from 'lodash/cloneDeep';
 import { getInterval } from 'corespring-number-line/src/number-line/graph/tick-utils';
@@ -194,21 +195,22 @@ class Main extends React.Component {
           onDeselectElements={noOp} />
         <div className="domain">
           Domain =
-          <TextField
+          <NumberTextField
             value={this.props.model.model.config.domain[0]}
             name={domainBegin}
             style={numberFieldStyle}
             onChange={this.domainChange.bind(this)} /> to
-          <TextField
+          <NumberTextField
             value={this.props.model.model.config.domain[1]}
             name={domainEnd}
             style={numberFieldStyle}
             onChange={this.domainChange.bind(this)} />
         </div>
         Number of Ticks:
-        <TextField
+        <NumberTextField
           value={this.props.model.model.config.tickFrequency}
           name="numberOfTicks"
+          min={2}
           style={numberFieldStyle}
           onChange={this.props.onTickFrequencyChange.bind(this)} />
         <Checkbox
@@ -219,7 +221,7 @@ class Main extends React.Component {
           this.props.model.model.config.showMinorTicks && (
             <div>
               Minor Tick Frequency:
-              <TextField
+              <NumberTextField
                 name="snapPerTick"
                 style={numberFieldStyle}
                 value={this.props.model.model.config.snapPerTick}
