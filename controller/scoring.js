@@ -10,7 +10,7 @@ function partialScore(question, session) {
     return maxScore;
   }
   if (question.partialScoring) {
-    let scoring = question.partialScoring.find(({ correctCount, weight }) => correctCount === corrected.correct.length);
+    let scoring = question.partialScoring.find(({ numCorrect, weight }) => numCorrect === corrected.correct.length);
     return scoring ? (scoring.weight * maxScore) : 0;
   }
   return 0;

@@ -75,7 +75,7 @@ describe('controller', () => {
         let q = _.cloneDeep(question);
 
         q.partialScoring = [{
-          correctCount: 1,
+          numCorrect: 1,
           weight: 0.21
         }];
 
