@@ -294,7 +294,10 @@ class Main extends React.Component {
             }
         </Tab>
         <Tab label="Scoring">
-          <PartialScoringConfig/>
+          <PartialScoringConfig
+            partialScoring={this.props.model.partialScoring}
+            numberOfCorrectResponses={this.props.model.correctResponse.length}
+            onPartialScoringChange={this.props.onPartialScoringChange.bind(this)} />
         </Tab>
       </Tabs>
       </div>

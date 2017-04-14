@@ -88,8 +88,16 @@ export default class NumberLineConfigReactElement extends HTMLElement {
   }
 
   onFeedbackChange(feedback) {
-    console.log('changes to yo feedback!');
     this._model.feedback = feedback;
+    let detail = {
+      update: this._model
+    };
+    this.dispatchEvent(new CustomEvent('model.updated', {bubbles: true, detail}));
+    this._rerender();
+  }
+
+  onPartialScoringChange(partialScoring) {
+    this._model.partialScoring = partialScoring;
     let detail = {
       update: this._model
     };
@@ -108,7 +116,8 @@ export default class NumberLineConfigReactElement extends HTMLElement {
       onCorrectResponseChange: this.onCorrectResponseChange.bind(this),
       onInitialElementsChange: this.onInitialElementsChange.bind(this),
       onAvailableTypesChange: this.onAvailableTypesChange.bind(this),
-      onFeedbackChange: this.onFeedbackChange.bind(this)
+      onFeedbackChange: this.onFeedbackChange.bind(this),
+      onPartialScoringChange: this.onPartialScoringChange.bind(this)
     });
     ReactDOM.render(element, this);
   }
