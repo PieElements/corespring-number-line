@@ -4,15 +4,7 @@ import cloneDeep from 'lodash/cloneDeep';
 import isEmpty from 'lodash/isEmpty';
 import omitBy from 'lodash/omitBy';
 
-import { maxScore, scoree, getCorrected } from './scoring.js';
-
-let score = (number) => {
-  return {
-    score: {
-      scaled: number
-    }
-  }
-}
+import { maxScore, score, getCorrected, getCorrectness } from './scoring.js';
 
 let getPartialScore = (corrected, ps) => {
   let { correct } = corrected;
@@ -29,26 +21,11 @@ export function outcome(question, session) {
   session.answer = session.answer || [];
 
   return new Promise((resolve, reject) => {
-
-    let corrected = getCorrected(session.answer, cloneDeep(question.correctResponse));
-    let correctness = getCorrectness(corrected);
-
-    if (correctness === 'correct') {
-      resolve(score(1.0));
-    } else if (correctness === 'incorrect') {
-      resolve(score(0.0));
-    } else if (correctness === 'partial') {
-      let { allowPartialScoring, partialScoring } = question;
-      let ps = (partialScoring || []).filter(o => !isEmpty(o));
-      let canDoPartialScoring = allowPartialScoring && ps.length > 0;
-      if (canDoPartialScoring) {
-        resolve(score(getPartialScore(corrected, ps)))
-      } else {
-        resolve(score(0.0));
+    resolve({
+      score: {
+        scaled: score(question, session)
       }
-    } else {
-      resolve({ score: { scaled: -1 } });
-    }
+    });
   });
 }
 
@@ -89,29 +66,6 @@ let getFeedback = (correctness, feedback) => {
   }
 }
 
-let getCorrectness = (corrected) => {
-  let { incorrect, correct, notInAnswer } = corrected;
-
-  if (incorrect.length === 0 && correct.length === 0) {
-    return 'unanswered';
-  }
-
-  if (incorrect.length === 0 && notInAnswer.length === 0) {
-    return 'correct';
-  }
-
-  if (incorrect.length > 0 || notInAnswer.length > 0) {
-    if (correct.length > 0) {
-      return 'partial';
-    } else {
-      return 'incorrect';
-    }
-  }
-
-  return 'unknown';
-}
-
-
 export function model(question, session, env) {
 
   if (!question) {
@@ -121,13 +75,9 @@ export function model(question, session, env) {
   return new Promise((resolve, reject) => {
     let { model } = question;
     if (model.config) {
-
       let evaluateMode = env.mode === 'evaluate';
 
-      let correctResponse = cloneDeep(question.correctResponse);
-      correctResponse.forEach((response) => delete response.weight);
-
-      let corrected = evaluateMode && getCorrected(session ? session.answer || [] : [], correctResponse);
+      let corrected = evaluateMode && getCorrected(session ? session.answer || [] : [], question.correctResponse);
       let correctness = evaluateMode && getCorrectness(corrected);
 
       let exhibitOnly = question.model.config ? question.model.config.exhibitOnly : null;
