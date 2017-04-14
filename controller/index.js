@@ -4,6 +4,8 @@ import cloneDeep from 'lodash/cloneDeep';
 import isEmpty from 'lodash/isEmpty';
 import omitBy from 'lodash/omitBy';
 
+import { maxScore, scoree, getCorrected } from './scoring.js';
+
 let score = (number) => {
   return {
     score: {
@@ -49,40 +51,6 @@ export function outcome(question, session) {
     }
   });
 }
-
-let getCorrected = (answer, correctResponse) => {
-
-  let matches = (a) => {
-    return (v) => {
-      return isEqual(a, v);
-    }
-  }
-
-  return answer.reduce((acc, a, index) => {
-
-    let { correct, incorrect, notInAnswer } = acc;
-
-    let match = find(notInAnswer, matches(a));
-
-    if (match) {
-      correct.push(index);
-      notInAnswer.splice(notInAnswer.indexOf(match), 1);
-    } else {
-      incorrect.push(index);
-    }
-
-    return {
-      correct: correct,
-      incorrect: incorrect,
-      notInAnswer: notInAnswer
-    }
-  }, {
-      correct: [],
-      incorrect: [],
-      notInAnswer: correctResponse
-    });
-}
-
 
 export const DEFAULT_FEEDBACK = {
   correct: 'Correct!',
@@ -157,6 +125,8 @@ export function model(question, session, env) {
       let evaluateMode = env.mode === 'evaluate';
 
       let correctResponse = cloneDeep(question.correctResponse);
+      correctResponse.forEach((response) => delete response.weight);
+
       let corrected = evaluateMode && getCorrected(session ? session.answer || [] : [], correctResponse);
       let correctness = evaluateMode && getCorrectness(corrected);
 

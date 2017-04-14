@@ -12,12 +12,14 @@ import PointConfig from 'corespring-number-line/src/number-line/point-config';
 import RaisedButton from 'material-ui/RaisedButton';
 import React from 'react';
 import TextField from 'material-ui/TextField';
-import NumberTextField from './number-text-field';
+import NumberTextField from 'corespring-scoring-config/src/number-text-field.jsx';
+import PartialScoringConfig from 'corespring-scoring-config/src/index.jsx';
 import { buildElementModel } from 'corespring-number-line/src/number-line/graph/elements/builder';
 import cloneDeep from 'lodash/cloneDeep';
 import { getInterval } from 'corespring-number-line/src/number-line/graph/tick-utils';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import injectTapEventPlugin from 'react-tap-event-plugin';
+import {Tabs, Tab} from 'material-ui/Tabs';
 
 injectTapEventPlugin();
 
@@ -176,118 +178,125 @@ class Main extends React.Component {
 
     return <MuiThemeProvider muiTheme={muiTheme}>
       <div className="corespring-choice-config-root">
-        <p>In this interaction, students plot points, line segments or rays on a number line.</p>
-        <h2>Number Line Attributes</h2>
-        <p>
-          Set up the number line by entering the domain and number of tick marks to display. Labels on the number
-          line can be edited or removed by clicking on the label.
-        </p>
-        <NumberLineGraph
-          elements={[]}
-          domain={this.getDomain()}
-          ticks={this.getTicks()}
-          interval={getInterval(this.getDomain(), this.getTicks())}
-          width={600}
-          height={40}
-          onAddElement={noOp}
-          onMoveElement={noOp}
-          onToggleElement={noOp}
-          onDeselectElements={noOp} />
-        <div className="domain">
-          Domain =
-          <NumberTextField
-            value={this.props.model.model.config.domain[0]}
-            name={domainBegin}
-            style={numberFieldStyle}
-            onChange={this.domainChange.bind(this)} /> to
-          <NumberTextField
-            value={this.props.model.model.config.domain[1]}
-            name={domainEnd}
-            style={numberFieldStyle}
-            onChange={this.domainChange.bind(this)} />
-        </div>
-        Number of Ticks:
-        <NumberTextField
-          value={this.props.model.model.config.tickFrequency}
-          name="numberOfTicks"
-          min={2}
-          style={numberFieldStyle}
-          onChange={this.props.onTickFrequencyChange.bind(this)} />
-        <Checkbox
-          checked={this.props.model.model.config.showMinorTicks}
-          label="Display minor tick marks"
-          onCheck={this.props.onMinorTicksChanged.bind(this)} />
-        {
-          this.props.model.model.config.showMinorTicks && (
-            <div>
-              Minor Tick Frequency:
+        <Tabs>
+          <Tab label="Design">
+            <p>In this interaction, students plot points, line segments or rays on a number line.</p>
+            <h2>Number Line Attributes</h2>
+            <p>
+              Set up the number line by entering the domain and number of tick marks to display. Labels on the number
+              line can be edited or removed by clicking on the label.
+            </p>
+            <NumberLineGraph
+              elements={[]}
+              domain={this.getDomain()}
+              ticks={this.getTicks()}
+              interval={getInterval(this.getDomain(), this.getTicks())}
+              width={600}
+              height={40}
+              onAddElement={noOp}
+              onMoveElement={noOp}
+              onToggleElement={noOp}
+              onDeselectElements={noOp} />
+            <div className="domain">
+              Domain =
               <NumberTextField
-                name="snapPerTick"
+                value={this.props.model.model.config.domain[0]}
+                name={domainBegin}
                 style={numberFieldStyle}
-                value={this.props.model.model.config.snapPerTick}
-                onChange={this.props.onSnapPerTickChange.bind(this)} />
+                onChange={this.domainChange.bind(this)} /> to
+              <NumberTextField
+                value={this.props.model.model.config.domain[1]}
+                name={domainEnd}
+                style={numberFieldStyle}
+                onChange={this.domainChange.bind(this)} />
             </div>
-          )
-        }
-        <div className="reset-defaults">
-          <RaisedButton label="Reset to default values" onClick={this.setDefaults.bind(this)} />
-        </div>
-        {
-          !this.props.model.model.config.exhibitOnly && (
-            [
-              <h2 key='header'>Correct Response</h2>,
-              <p key='prompt'>
-                Select answer type and place it on the number line. Intersecting points, line segments and/or rays will appear above the number
-                line. <i>Note: A maximum of 20 points, line segments or rays may be plotted.</i>
-              </p>,
-              <NumberLine key='number-line'
-                onMoveElement={this.moveCorrectResponse.bind(this)}
-                onDeleteElements={this.deleteCorrectResponse.bind(this)}
-                onAddElement={this.addCorrectResponse.bind(this)}
-                answer={correctResponse}
-                model={this.props.model.model} />,
-              <Card key='display-card'>
-                <CardHeader title="Display" showExpandableButton={true} />
-                <CardText expandable={true}>
-                  <p>Click on the input options to be displayed to the students. All inputs will display by default.</p>
-                  <div className="point-type-chooser">
-                    <PointConfig
-                      onSelectionChange={this.availableTypesChange.bind(this)}
-                      selection={this.props.model.model.config.availableTypes} />
-                  </div>
-                </CardText>
-              </Card>
-            ]
-          )
-        }
-        <Card>
-          <CardHeader title="Initial view/Make Exhibit" showExpandableButton={true} />
-          <CardText expandable={true}>
-            <p>Use this number line to set a starting point, line segment or ray. This is optional.</p>
-            <p>This number line may also be used to make an exhibit number line, which can not be manipulated by a student.</p>
-            <NumberLine
-              onMoveElement={this.moveInitialView.bind(this)}
-              onDeleteElements={this.deleteInitialView.bind(this)}
-              onAddElement={this.addInitialView.bind(this)}
-              answer={initialView}
-              model={this.props.model.model} />
+            Number of Ticks:
+            <NumberTextField
+              value={this.props.model.model.config.tickFrequency}
+              name="numberOfTicks"
+              min={2}
+              style={numberFieldStyle}
+              onChange={this.props.onTickFrequencyChange.bind(this)} />
             <Checkbox
-              label="Make exhibit"
-              checked={this.props.model.model.config.exhibitOnly}
-              onCheck={this.exhibitChanged.bind(this)}
-            />
-          </CardText>
-        </Card>
-        {
-          !this.props.model.model.config.exhibitOnly && (
-            <FeedbackConfig
-              feedback={this.props.model.feedback}
-              onChange={this.props.onFeedbackChange.bind(this)}
-              defaultCorrectFeedback="Correct"
-              defaultPartialFeedback="Almost!"
-              defaultIncorrectFeedback="Incorrect" />
-          )
-        }
+              checked={this.props.model.model.config.showMinorTicks}
+              label="Display minor tick marks"
+              onCheck={this.props.onMinorTicksChanged.bind(this)} />
+            {
+              this.props.model.model.config.showMinorTicks && (
+                <div>
+                  Minor Tick Frequency:
+                  <NumberTextField
+                    name="snapPerTick"
+                    style={numberFieldStyle}
+                    value={this.props.model.model.config.snapPerTick}
+                    onChange={this.props.onSnapPerTickChange.bind(this)} />
+                </div>
+              )
+            }
+            <div className="reset-defaults">
+              <RaisedButton label="Reset to default values" onClick={this.setDefaults.bind(this)} />
+            </div>
+            {
+              !this.props.model.model.config.exhibitOnly && (
+                [
+                  <h2 key='header'>Correct Response</h2>,
+                  <p key='prompt'>
+                    Select answer type and place it on the number line. Intersecting points, line segments and/or rays will appear above the number
+                    line. <i>Note: A maximum of 20 points, line segments or rays may be plotted.</i>
+                  </p>,
+                  <NumberLine key='number-line'
+                    onMoveElement={this.moveCorrectResponse.bind(this)}
+                    onDeleteElements={this.deleteCorrectResponse.bind(this)}
+                    onAddElement={this.addCorrectResponse.bind(this)}
+                    answer={correctResponse}
+                    model={this.props.model.model} />,
+                  <Card key='display-card'>
+                    <CardHeader title="Display" showExpandableButton={true} />
+                    <CardText expandable={true}>
+                      <p>Click on the input options to be displayed to the students. All inputs will display by default.</p>
+                      <div className="point-type-chooser">
+                        <PointConfig
+                          onSelectionChange={this.availableTypesChange.bind(this)}
+                          selection={this.props.model.model.config.availableTypes} />
+                      </div>
+                    </CardText>
+                  </Card>
+                ]
+              )
+            }
+            <Card>
+              <CardHeader title="Initial view/Make Exhibit" showExpandableButton={true} />
+              <CardText expandable={true}>
+                <p>Use this number line to set a starting point, line segment or ray. This is optional.</p>
+                <p>This number line may also be used to make an exhibit number line, which can not be manipulated by a student.</p>
+                <NumberLine
+                  onMoveElement={this.moveInitialView.bind(this)}
+                  onDeleteElements={this.deleteInitialView.bind(this)}
+                  onAddElement={this.addInitialView.bind(this)}
+                  answer={initialView}
+                  model={this.props.model.model} />
+                <Checkbox
+                  label="Make exhibit"
+                  checked={this.props.model.model.config.exhibitOnly}
+                  onCheck={this.exhibitChanged.bind(this)}
+                />
+              </CardText>
+            </Card>
+            {
+              !this.props.model.model.config.exhibitOnly && (
+                <FeedbackConfig
+                  feedback={this.props.model.feedback}
+                  onChange={this.props.onFeedbackChange.bind(this)}
+                  defaultCorrectFeedback="Correct"
+                  defaultPartialFeedback="Almost!"
+                  defaultIncorrectFeedback="Incorrect" />
+              )
+            }
+        </Tab>
+        <Tab label="Scoring">
+          <PartialScoringConfig/>
+        </Tab>
+      </Tabs>
       </div>
     </MuiThemeProvider>
   }

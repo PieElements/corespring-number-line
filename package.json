@@ -21,6 +21,7 @@
     "draft-js-import-html": "^0.3.2",
     "jquery": "^3.1.1",
     "corespring-feedback-config": "github:corespring/corespring-feedback-config",
+    "corespring-scoring-config": "github:corespring/corespring-scoring-config",
     "corespring-icon": "github:pielabs/corespring-icon",
     "d3-scale": "^1.0.4",
     "d3-selection": "^1.0.3",

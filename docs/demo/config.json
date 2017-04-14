@@ -11,11 +11,13 @@
       "element": "corespring-number-line",
       "correctResponse": [
         {
+          "weight": 1,
           "type": "point",
           "pointType": "full",
           "domainPosition": 1
         },
         {
+          "weight": 2,
           "type": "line",
           "leftPoint": "full",
           "rightPoint": "empty",
@@ -33,7 +35,7 @@
       "partialScoring": [
         {
           "numberOfCorrect": 1,
-          "scorePercentage": 35
+          "scorePercentage": 0.35
         }
       ],
       "model": {
