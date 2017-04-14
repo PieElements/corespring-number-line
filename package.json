@@ -4,7 +4,8 @@
   "description": "A number line interaction for pie",
   "main": "src/index.js",
   "scripts": {
-    "test": "./node_modules/.bin/mocha --require babel-register --recursive test && cd controller && npm test"
+    "test": "./node_modules/.bin/mocha --require babel-register --recursive test && cd controller && npm test",
+    "controller-test": "./node_modules/.bin/mocha  --require test/setup controller/test/**/*-test.js"
   },
   "repository": {
     "type": "git+ssh",

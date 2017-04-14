@@ -70,26 +70,13 @@ describe('controller', () => {
         });
     });
 
-    it('returns score of -1 for an unanswered answer', () => {
-      let s = _.cloneDeep(incorrectSession);
-      s.answer = [];
-      return controller.outcome(question, s)
-        .then(o => {
-          expect(o).to.eql({
-            score: {
-              scaled: -1.0
-            }
-          });
-        });
-    });
-
     describe('with partial scoring', () => {
       it('returns a partial score', () => {
         let q = _.cloneDeep(question);
 
         q.partialScoring = [{
-          numberOfCorrect: 1,
-          scorePercentage: 21
+          correctCount: 1,
+          weight: 0.21
         }];
 
         q.allowPartialScoring = true;
