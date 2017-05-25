@@ -1,8 +1,9 @@
+import { lineIsSwitched, switchGraphLine, toGraphFormat, toSessionFormat } from './data-converter';
+
+import NumberLine from './number-line';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import NumberLine from './number-line';
 import cloneDeep from 'lodash/cloneDeep';
-import { toSessionFormat, toGraphFormat, lineIsSwitched, switchGraphLine } from './data-converter';
 
 export default class CorespringNumberLine extends HTMLElement {
 
@@ -14,6 +15,7 @@ export default class CorespringNumberLine extends HTMLElement {
     this._model = m;
     this._applyInitialElements();
     this._render();
+    this.dispatch('model-set');
   }
 
   set session(s) {
@@ -23,8 +25,24 @@ export default class CorespringNumberLine extends HTMLElement {
   }
 
   connectedCallback() {
-    this.dispatchEvent(new CustomEvent('pie.register', { bubbles: true }));
     this._render();
+  }
+
+  isComplete() {
+    return this._session ? (this._session.answer || []).length > 0 : false
+  }
+
+  dispatch(type) {
+    this.dispatchEvent(new CustomEvent(type, {
+      bubbles: true,
+      detail: {
+        complete: this.isComplete()
+      }
+    }));
+  }
+
+  dispatchSessionChanged() {
+    this.dispatch('session-changed');
   }
 
   addElement(data) {
@@ -34,6 +52,7 @@ export default class CorespringNumberLine extends HTMLElement {
 
     this._session.answer = this._session.answer || [];
     this._session.answer.push(toSessionFormat(data));
+    this.dispatchSessionChanged();
     this._render();
   }
 
@@ -59,6 +78,7 @@ export default class CorespringNumberLine extends HTMLElement {
 
     this._session.answer.splice(index, 1, toSessionFormat(update));
 
+    this.dispatchSessionChanged();
     this._render();
   }
 
@@ -66,6 +86,7 @@ export default class CorespringNumberLine extends HTMLElement {
     this._session.answer = this._session.answer.filter((v, index) => {
       return !indices.some(d => d === index);
     });
+    this.dispatchSessionChanged();
     this._render();
   }
 
