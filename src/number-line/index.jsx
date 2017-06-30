@@ -1,13 +1,14 @@
-import React, { PropTypes as PT } from 'react';
-import PointChooser from './point-chooser';
+import Feedback from './feedback';
 import Graph from './graph';
-import { getInterval } from './graph/tick-utils';
-import cloneDeep from 'lodash/cloneDeep';
-import { buildElementModel } from './graph/elements/builder';
+import PT from 'prop-types';
+import PointChooser from './point-chooser';
+import React from 'react';
 import Toggle from 'corespring-correct-answer-toggle';
+import { buildElementModel } from './graph/elements/builder';
+import cloneDeep from 'lodash/cloneDeep';
+import { getInterval } from './graph/tick-utils';
 import isArray from 'lodash/isArray';
 import isNumber from 'lodash/isNumber';
-import Feedback from './feedback';
 
 require('./index.less');
 
@@ -41,10 +42,12 @@ export default class NumberLine extends React.Component {
 
   getDomain() {
     let config = this.props.model.config;
-    let { domain: domainArray } = config;
-    return {
-      min: domainArray[0],
-      max: domainArray[1]
+    let { domain } = config;
+    if (domain.length !== 2) {
+      throw new Error('Invalid domain array must have 2 values');
+    } else {
+      const [min, max] = domain;
+      return { min, max };
     }
   }
 
@@ -91,6 +94,16 @@ export default class NumberLine extends React.Component {
     this.setState({ selectedElements: [] });
   }
 
+  getSize(type, min, max, defaultValue) {
+    const { model: { config } } = this.props;
+
+    if (config && config[type]) {
+      return Math.max(min, Math.min(max, config[type]));
+    } else {
+      return defaultValue;
+    }
+  }
+
   render() {
 
     let { model, answer } = this.props;
@@ -98,6 +111,9 @@ export default class NumberLine extends React.Component {
     let { corrected = { correct: [], incorrect: [] }, disabled } = model;
     let addElement = this.addElement.bind(this);
     let elementsSelected = !disabled && this.state.selectedElements && this.state.selectedElements.length > 0;
+    const width = this.getSize('width', 400, 1600, 600);
+    const height = this.getSize('height', 300, 800, 400);
+
 
     let domain = this.getDomain();
     let ticks = this.getTicks();
@@ -107,8 +123,8 @@ export default class NumberLine extends React.Component {
       domain,
       ticks,
       interval: getInterval(domain, ticks),
-      width: 600,
-      height: 400
+      width,
+      height
     }
 
     let getAnswerElements = () => {
