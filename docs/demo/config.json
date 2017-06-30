@@ -39,7 +39,7 @@
       "model": {
         "config": {
           "domain": [
-            0,
+            -5,
             5
           ],
           "initialElements": [

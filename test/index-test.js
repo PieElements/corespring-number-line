@@ -1,6 +1,17 @@
-import { stub, assert, match } from 'sinon';
+import { assert, match, stub } from 'sinon';
+
 import { expect } from 'chai';
 import proxyquire from 'proxyquire';
+
+global.HTMLElement = class HTMLElement {
+  dispatchEvent() {
+
+  }
+}
+
+global.CustomEvent = class CustomEvent {
+
+}
 
 describe('number-line', () => {
 

@@ -37,7 +37,7 @@ export function outcome(question, session) {
       resolve(score(0.0));
     } else if (correctness === 'partial') {
       let { allowPartialScoring, partialScoring } = question;
-      let ps = partialScoring.filter(o => !isEmpty(o));
+      let ps = (partialScoring || []).filter(o => !isEmpty(o));
       let canDoPartialScoring = allowPartialScoring && ps.length > 0;
       if (canDoPartialScoring) {
         resolve(score(getPartialScore(corrected, ps)))

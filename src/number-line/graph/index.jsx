@@ -11,8 +11,8 @@ import Ticks, { TickValidator } from './ticks';
 import { getInterval, snapTo } from './tick-utils';
 import Stacks from './stacks';
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
-const getXScale = (min, max, width, padding) => {
 
+const getXScale = (min, max, width, padding) => {
   if (min === undefined || max === undefined || width === undefined) {
     throw new Error('missing min/max/width');
   }
@@ -148,8 +148,7 @@ export default class NumberLineGraph extends React.Component {
             position={el.position}
             bounds={bounds}
             onClick={toggleElement}
-            onMove={moveElement}
-          />
+            onMove={moveElement} />
         } else if (el.type === 'ray') {
           return <Ray
             {...commonProps}
@@ -159,8 +158,7 @@ export default class NumberLineGraph extends React.Component {
             onMove={moveElement}
             onToggleSelect={toggleElement}
             width={width}
-            empty={el.pointType === 'empty'}
-          />
+            empty={el.pointType === 'empty'} />
         }
       });
 
@@ -174,8 +172,7 @@ export default class NumberLineGraph extends React.Component {
           <Arrow
             x={width}
             y={lineY}
-            direction="right"
-          />
+            direction="right" />
           <Ticks
             y={lineY}
             domain={domain}

@@ -1,6 +1,6 @@
 {
   "name": "corespring-number-line",
-  "version": "0.2.0",
+  "version": "0.3.0-prerelease",
   "description": "A number line interaction for pie",
   "main": "src/index.js",
   "scripts": {
@@ -15,6 +15,12 @@
   "dependencies": {
     "classnames": "^2.2.5",
     "corespring-correct-answer-toggle": "^3.0.0",
+    "corespring-editable-html": "github:corespring/corespring-editable-html",
+    "draft-js": "^0.10.0",
+    "draft-js-export-html": "^0.5.2",
+    "draft-js-import-html": "^0.3.2",
+    "jquery": "^3.1.1",
+    "corespring-feedback-config": "github:corespring/corespring-feedback-config",
     "corespring-icon": "github:pielabs/corespring-icon",
     "d3-scale": "^1.0.4",
     "d3-selection": "^1.0.3",
