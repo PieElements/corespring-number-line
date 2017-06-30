@@ -8,11 +8,11 @@ import FeedbackSelector from 'corespring-feedback-config/src/feedback-selector.j
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import NumberLine from 'corespring-number-line/src/number-line';
 import NumberLineGraph from 'corespring-number-line/src/number-line/graph';
+import NumberTextField from './number-text-field';
 import PointConfig from 'corespring-number-line/src/number-line/point-config';
 import RaisedButton from 'material-ui/RaisedButton';
 import React from 'react';
 import TextField from 'material-ui/TextField';
-import NumberTextField from './number-text-field';
 import { buildElementModel } from 'corespring-number-line/src/number-line/graph/elements/builder';
 import cloneDeep from 'lodash/cloneDeep';
 import { getInterval } from 'corespring-number-line/src/number-line/graph/tick-utils';
@@ -35,26 +35,28 @@ const domainBegin = "domainBegin";
 const domainEnd = "domainEnd";
 
 const defaultConfig = {
-  "domain": [0, 5],
-  "tickFrequency": 6,
-  "showMinorTicks": true,
-  "snapPerTick": 1,
-  "tickLabelOverrides": [],
-  "initialType": "PF",
-  "exhibitOnly": false,
-  "availableTypes": {
-    "PF": true,
-    "PE": true,
-    "LFF": true,
-    "LEF": true,
-    "LFE": true,
-    "LEE": true,
-    "RFN": true,
-    "RFP": true,
-    "REN": true,
-    "REP": true
+  domain: [0, 5],
+  width: 500,
+  height: 40,
+  tickFrequency: 6,
+  showMinorTicks: true,
+  snapPerTick: 1,
+  tickLabelOverrides: [],
+  initialType: "PF",
+  exhibitOnly: false,
+  availableTypes: {
+    PF: true,
+    PE: true,
+    LFF: true,
+    LEF: true,
+    LFE: true,
+    LEE: true,
+    RFN: true,
+    RFP: true,
+    REN: true,
+    REP: true
   },
-  "initialElements": [
+  initialElements: [
   ]
 };
 
@@ -187,8 +189,8 @@ class Main extends React.Component {
           domain={this.getDomain()}
           ticks={this.getTicks()}
           interval={getInterval(this.getDomain(), this.getTicks())}
-          width={600}
-          height={40}
+          width={defaultConfig.width}
+          height={defaultConfig.height}
           onAddElement={noOp}
           onMoveElement={noOp}
           onToggleElement={noOp}

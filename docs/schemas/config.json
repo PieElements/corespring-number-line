@@ -171,6 +171,18 @@
           "type": "object",
           "description": "An object describing the various configuration properties of the component.",
           "properties": {
+            "width": {
+              "type": "number",
+              "description": "The width of the component",
+              "minimum": 400,
+              "maximum": 1600
+            },
+            "height": {
+              "type": "number",
+              "description": "The height of the component",
+              "minimum": 300,
+              "maximum": 800
+            },
             "domain": {
               "type": "array",
               "description": "A two-number array representing the minimum and maximum values to be displayed on the number line.",
